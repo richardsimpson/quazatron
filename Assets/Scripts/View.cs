@@ -67,7 +67,7 @@ public class View : MonoBehaviour
     {
         // move the player one space to the right, 
         Transform t = this.player.transform;
-        t.position += new Vector3(t.position.x + t.localScale.x, 0, 0);
+        t.position += new Vector3(t.localScale.x, 0, 0);
 
         // disable it's script.
         this.player.enabled = false;
@@ -76,11 +76,13 @@ public class View : MonoBehaviour
         oldPlayers.Add(this.player);
 
         // take the last player object from the Lives list and 'reset' it to be at the initial player position (first wire).
-        this.player = this.playerLives[this.playerLives.Count-1];
-        this.playerLives.RemoveAt(this.playerLives.Count-1);
-        this.player.reset();
+        if (this.playerLives.Count > 0) {
+            this.player = this.playerLives[this.playerLives.Count-1];
+            this.playerLives.RemoveAt(this.playerLives.Count-1);
+            this.player.reset();
 
-        // then enable it's script.
-        this.player.enabled = true;
+            // then enable it's script.
+            this.player.enabled = true;
+        }
     }
 }

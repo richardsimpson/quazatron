@@ -231,6 +231,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 955582bf9784d4c04b9c6e9c25c7f076, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetPrefab: {fileID: 114000011523469340, guid: 05cdd464c08854d1c851df81159e9280,
+    type: 2}
+  wirePrefab: {fileID: 114000011219656882, guid: 9b74b1b0a289c4535be1c869e807508a,
+    type: 2}
   playerPrefab: {fileID: 114000013381479556, guid: 01d2fec306a464194a4dba6e75ffd354,
     type: 2}
 --- !u!4 &547416117
@@ -505,7 +509,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1721851959}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.27, y: 3.25, z: 0}
+  m_LocalPosition: {x: 7.57, y: 3.66, z: 0}
   m_LocalScale: {x: 0.5, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -761,10 +765,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 719fd7e4193074d38b0c21327d256f78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPrefab: {fileID: 114000011523469340, guid: 05cdd464c08854d1c851df81159e9280,
-    type: 2}
-  wirePrefab: {fileID: 114000013699229598, guid: 006e59cd6f57640c69fd5f50f08bc101,
-    type: 2}
 --- !u!4 &2057326508
 Transform:
   m_ObjectHideFlags: 0

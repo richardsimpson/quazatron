@@ -5,13 +5,7 @@ using UnityEngine;
 // extends MonoBehaviour so that we can wire it into the Application object in Unity
 public class Controller : MonoBehaviour
 {
-    private const float INITIAL_Y = 4f;
-    private const float Y_INCREMENT = 0.75f;
-
-    public TargetController targetPrefab;
-    public WireController wirePrefab;
-
-    private Dictionary<BoardObject, WireController> modelToViewBoardObjects = new Dictionary<BoardObject, WireController>();
+    private Dictionary<BoardObject, AbstractBoardObjectController> modelToViewBoardObjects = new Dictionary<BoardObject, AbstractBoardObjectController>();
     private Dictionary<BoardObject, TargetController> modelToViewTargets = new Dictionary<BoardObject, TargetController>();
 
     private Model model;
@@ -33,19 +27,15 @@ public class Controller : MonoBehaviour
         this.model.zapFired += onZapFired;
 
         // create the view - one component for each element in the model.
-        TargetController[] targetViews = constructTargetViews();
-        this.view.setTargets(targetViews);
-
-        WireController[] inputViews = constructInputViews();
-        this.view.setInputs(inputViews);
+        this.view.init();
 
         // Create the map/dictionary of model -> view elements, so can instruct changes in the view.
-        for (int i = 0 ; i < inputs.Length ; i++) {
-            this.modelToViewBoardObjects.Add(inputs[i], inputViews[i]);
-        }
+        List<WireController> inputViews = this.view.getInputs();
+        List<TargetController> targetViews = this.view.getTargets();
         for (int i = 0 ; i < targets.Length ; i++) {
             this.modelToViewTargets.Add(targets[i], targetViews[i]);
         }
+        addToDictionary(inputs, inputViews);
 
         // setup the player (view)
         PlayerController player = this.view.createPlayer();
@@ -63,7 +53,23 @@ public class Controller : MonoBehaviour
         this.model.getCurrentPlayer().playerMoved += onPlayerMoved;
     }
 
-    void onZapFired(Model sender, EventArgs e)
+    private void addToDictionary(BoardObject[] inputs, List<WireController> inputViews) {
+        for (int i = 0 ; i < inputs.Length ; i++) {
+            addToDictionary(inputs[i], inputViews[i]);
+        }
+    }
+
+    private void addToDictionary(BoardObject input, AbstractBoardObjectController inputView) {
+        this.modelToViewBoardObjects.Add(input, inputView);
+
+        for (int i = 0 ; i < input.getOutputs().Count ; i++) {
+            // TODO: This is failing because of the inputs being linked to targets.  Make the targets AbstractBoardObjectControllers
+            // as well, and only have a single dictionary??
+            addToDictionary(input.getOutputs()[i], inputView.getOutputs()[i]);
+        }
+    }
+
+    private void onZapFired(Model sender, EventArgs e)
     {
         this.view.onZapFired();
     }
@@ -84,39 +90,11 @@ public class Controller : MonoBehaviour
     }
 
     private void onWireActivated(Wire sender, EventArgs e) {
-        this.view.onWireActivated(this.modelToViewBoardObjects[sender]);
+        this.view.onWireActivated((WireController)this.modelToViewBoardObjects[sender]);
     }
 
     private void onTargetActivated(Target sender, EventArgs e) {
         this.view.onTargetActivated(this.modelToViewTargets[sender]);
-    }
-
-    private TargetController[] constructTargetViews() {
-        TargetController[] targetViews = new TargetController[12];
-
-        float yPos = INITIAL_Y;
-
-        for (int index = 0 ; index < targetViews.Length ; index++) {
-            targetViews[index] = Instantiate(targetPrefab);
-            targetViews[index].transform.position = new Vector3(0, yPos, 0);
-            yPos = yPos - Y_INCREMENT;
-        }
-
-        return targetViews;
-    }
-
-    private WireController[] constructInputViews() {
-        WireController[] inputViews = new WireController[12];
-
-        float yPos = INITIAL_Y;
-
-        for (int index = 0 ; index < inputViews.Length ; index++) {
-            inputViews[index] = Instantiate(wirePrefab);
-            inputViews[index].transform.position = new Vector3(-3.27f, yPos, 0);
-            yPos = yPos - Y_INCREMENT;
-        }
-
-        return inputViews;
     }
 
 }

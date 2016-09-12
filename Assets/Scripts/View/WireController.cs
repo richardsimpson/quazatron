@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class WireController : MonoBehaviour {
+public class WireController : AbstractBoardObjectController {
 
     private Color YELLOW = new Color(1F, 1F, 0F);
 

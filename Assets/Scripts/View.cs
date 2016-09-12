@@ -5,26 +5,78 @@ using UnityEngine;
 // extends MonoBehaviour so that we can wire it into the Application object in Unity
 public class View : MonoBehaviour
 {
+    private const float INITIAL_Y = 4f;
+    private const float Y_INCREMENT = 0.75f;
+
     private const float LIVES_X = -8f;
     private const float LIVES_INITIAL_Y = 4f;
 
-    private TargetController[] targets;
-    private WireController[] inputs;
+    private const int MAX_INPUTS = 12;
 
+    public TargetController targetPrefab;
+    public WireController wirePrefab;
     public PlayerController playerPrefab;
+
+    private List<TargetController> targets = new List<TargetController>();
+    private List<WireController> inputs = new List<WireController>();
 
     private PlayerController player;
     private List<PlayerController> playerLives = new List<PlayerController>();
     private List<PlayerController> oldPlayers = new List<PlayerController>();
 
-    public void setTargets(TargetController[] targetViews)
-    {
-        this.targets = targetViews;
+    public void init() {
+        constructTargetViews();
+        constructInputViews();
     }
 
-    public void setInputs(WireController[] inputViews)
+    private void constructTargetViews() {
+        float yPos = INITIAL_Y;
+
+        for (int index = 0 ; index < MAX_INPUTS ; index++) {
+            TargetController newTarget = Instantiate(targetPrefab);
+            newTarget.transform.position = new Vector3(0, yPos, 0);
+
+            this.targets.Add(newTarget);
+
+            yPos = yPos - Y_INCREMENT;
+        }
+    }
+
+    private WireController constructWire(int column, float yPos) {
+        float colZeroXPos = this.targets[0].transform.position.x - this.targets[0].transform.localScale.x;
+
+        WireController result = Instantiate(wirePrefab);
+        float wireWidth = result.transform.localScale.x;
+
+        result.transform.position += new Vector3(colZeroXPos-(wireWidth*column), yPos, 0);
+        return result;
+    }
+
+    private void constructInputViews() {
+        float yPos = INITIAL_Y;
+
+        for (int index = 0 ; index < MAX_INPUTS ; index++) {
+            WireController wire3 = constructWire(0, yPos);
+            WireController wire2 = constructWire(1, yPos);
+            WireController wire1 = constructWire(2, yPos);
+
+            wire1.AddOutput(wire2);
+            wire2.AddOutput(wire3);
+
+            this.inputs.Add(wire1);
+
+            yPos = yPos - Y_INCREMENT;
+        }
+    }
+
+    public List<TargetController> getTargets()
     {
-        this.inputs = inputViews;
+        return this.targets;
+    }
+
+    public List<WireController> getInputs()
+    {
+        return this.inputs;
     }
 
     public PlayerController createPlayer()

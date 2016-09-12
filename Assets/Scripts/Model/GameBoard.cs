@@ -27,9 +27,12 @@ public class GameBoard
             this.targets[i] = new Target();
         }
 
-        // setup the board.  For now, just create a bunch of wires, one to each target
+        // setup the board.  For now, just create a bunch of wires, three to each target
         for (int i = 0 ; i < this.inputs.Length ; i++) {
-            this.inputs[i] = new Wire(this.targets[i]);
+            Wire wire3 = new Wire(this.targets[i]);
+            Wire wire2 = new Wire(wire3);
+            Wire wire1 = new Wire(wire2);
+            this.inputs[i] = wire1;
         }
 	}
 

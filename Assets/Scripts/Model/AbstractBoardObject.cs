@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
-public class AbstractBoardObject : BoardObject
+public abstract class AbstractBoardObject : BoardObject
 {
-    private List<BoardObject> outputs = new List<BoardObject>();
+    public event BoardObjectActivatedEventHandler boardObjectActivated;
 
-	public AbstractBoardObject() {
-		
-	}
+    private List<BoardObject> outputs = new List<BoardObject>();
 
 	protected void AddOutput(BoardObject output) {
         this.outputs.Add(output);
@@ -16,6 +15,12 @@ public class AbstractBoardObject : BoardObject
     public List<BoardObject> getOutputs() {
 		return this.outputs;
 	}
+
+    protected void OnBoardObjectActivated(EventArgs eventArgs) {
+        Debug.Log("OnBoardObjectActivated.");
+        if (boardObjectActivated != null)
+            boardObjectActivated(this, eventArgs);
+    }
 
     public virtual void inputActivated(BoardObject input) {
         throw new NotImplementedException();

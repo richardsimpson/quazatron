@@ -43,12 +43,14 @@ public class View : MonoBehaviour
     }
 
     private WireController constructWire(int column, float yPos) {
-        float colZeroXPos = this.targets[0].transform.position.x - this.targets[0].transform.localScale.x;
-
         WireController result = Instantiate(wirePrefab);
+
+        float colZeroXPos = this.targets[0].transform.position.x - (this.targets[0].transform.localScale.x/2)
+            - (result.transform.localScale.x/2);
+
         float wireWidth = result.transform.localScale.x;
 
-        result.transform.position += new Vector3(colZeroXPos-(wireWidth*column), yPos, 0);
+        result.transform.position = new Vector3(colZeroXPos-(wireWidth*column), yPos, 0);
         return result;
     }
 
@@ -62,6 +64,7 @@ public class View : MonoBehaviour
 
             wire1.AddOutput(wire2);
             wire2.AddOutput(wire3);
+            wire3.AddOutput(this.targets[index]);
 
             this.inputs.Add(wire1);
 
@@ -81,7 +84,9 @@ public class View : MonoBehaviour
 
     public PlayerController createPlayer()
     {
-        this.player = Instantiate<PlayerController>(playerPrefab);
+        this.player = Instantiate<PlayerController>(playerPrefab); 
+        float posX = this.targets[0].transform.position.x - (this.targets[0].transform.localScale.x/2);
+        posX = posX - this.inputs[0].transform.localScale.x * 3 - 50;
         return this.player;
     }
 
@@ -105,14 +110,9 @@ public class View : MonoBehaviour
         this.player.onPlayerMoved(position);
     }
 
-    public void onWireActivated(WireController wireController)
+    public void onBoardObjectActivated(AbstractBoardObjectController boardObjectController)
     {
-        wireController.onWireActivated();
-    }
-
-    public void onTargetActivated(TargetController targetController)
-    {
-        targetController.onTargetActivated();
+        boardObjectController.onActivated();
     }
 
     public void onZapFired()

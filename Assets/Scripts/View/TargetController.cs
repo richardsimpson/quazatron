@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class TargetController : MonoBehaviour {
+public class TargetController : AbstractBoardObjectController {
 
     private Color YELLOW = new Color(1F, 1F, 0F);
 
@@ -17,7 +17,7 @@ public class TargetController : MonoBehaviour {
 	
 	}
 
-    public void onTargetActivated()
+    public override void onActivated()
     {
         targetRenderer.color = YELLOW;
     }

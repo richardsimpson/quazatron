@@ -17,5 +17,9 @@ public class AbstractBoardObjectController : MonoBehaviour
     public List<AbstractBoardObjectController> getOutputs() {
         return this.outputs;
     }
+
+    public virtual void onActivated() {
+        
+    }
 }
 

@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     // after a FixedUpdate has happened since they released the fire button.
     private bool fireKeyDown  = true;
 
-    private const float INITIAL_X = -5.96f;
+    private const float INITIAL_X = -5.46f;
     private const float INITIAL_Y = 4f;
     private const float MOVE_BY_Y = 0.75f;
 

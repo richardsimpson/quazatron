@@ -6,10 +6,16 @@ using UnityEngine;
 public class Controller : MonoBehaviour
 {
     private Dictionary<BoardObject, AbstractBoardObjectController> modelToViewBoardObjects = new Dictionary<BoardObject, AbstractBoardObjectController>();
-    private Dictionary<BoardObject, TargetController> modelToViewTargets = new Dictionary<BoardObject, TargetController>();
 
     private Model model;
     private View view;
+
+    private void addBoardObjectActivatedEventListener(BoardObject boardObject) {
+        boardObject.boardObjectActivated += onBoardObjectActivated;
+        for (int i = 0 ; i < boardObject.getOutputs().Count ; i++) {
+            addBoardObjectActivatedEventListener(boardObject.getOutputs()[i]);
+        }
+    }
 
     public void init(Model model, View view) {
         this.model = model;
@@ -18,11 +24,7 @@ public class Controller : MonoBehaviour
         // add listeners to all model events.
         BoardObject[] inputs = this.model.getInputs();
         for (int i = 0 ; i < inputs.Length ; i++) {
-            ((Wire)inputs[i]).wireActivated += onWireActivated;
-        }
-        Target[] targets = this.model.getTargets();
-        for (int i = 0 ; i < targets.Length ; i++) {
-            targets[i].targetActivated += onTargetActivated;
+            addBoardObjectActivatedEventListener(inputs[i]);
         }
         this.model.zapFired += onZapFired;
 
@@ -31,10 +33,6 @@ public class Controller : MonoBehaviour
 
         // Create the map/dictionary of model -> view elements, so can instruct changes in the view.
         List<WireController> inputViews = this.view.getInputs();
-        List<TargetController> targetViews = this.view.getTargets();
-        for (int i = 0 ; i < targets.Length ; i++) {
-            this.modelToViewTargets.Add(targets[i], targetViews[i]);
-        }
         addToDictionary(inputs, inputViews);
 
         // setup the player (view)
@@ -89,12 +87,8 @@ public class Controller : MonoBehaviour
         this.view.onPlayerMoved(e.position);
     }
 
-    private void onWireActivated(Wire sender, EventArgs e) {
-        this.view.onWireActivated((WireController)this.modelToViewBoardObjects[sender]);
-    }
-
-    private void onTargetActivated(Target sender, EventArgs e) {
-        this.view.onTargetActivated(this.modelToViewTargets[sender]);
+    private void onBoardObjectActivated(BoardObject sender, EventArgs e) {
+        this.view.onBoardObjectActivated(this.modelToViewBoardObjects[sender]);
     }
 
 }

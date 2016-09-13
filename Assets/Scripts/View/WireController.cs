@@ -17,7 +17,7 @@ public class WireController : AbstractBoardObjectController {
 	
 	}
 
-    public void onWireActivated()
+    public override void onActivated()
     {
         wireRenderer.color = YELLOW;
     }

@@ -61,8 +61,6 @@ public class Controller : MonoBehaviour
         this.modelToViewBoardObjects.Add(input, inputView);
 
         for (int i = 0 ; i < input.getOutputs().Count ; i++) {
-            // TODO: This is failing because of the inputs being linked to targets.  Make the targets AbstractBoardObjectControllers
-            // as well, and only have a single dictionary??
             addToDictionary(input.getOutputs()[i], inputView.getOutputs()[i]);
         }
     }

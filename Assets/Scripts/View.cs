@@ -5,14 +5,15 @@ using UnityEngine;
 // extends MonoBehaviour so that we can wire it into the Application object in Unity
 public class View : MonoBehaviour
 {
-    private const float INITIAL_Y = 4f;
-    private const float Y_INCREMENT = 0.75f;
+    private const float INITIAL_Y = 3f;
+    private const float Y_INCREMENT = 0.60f;
 
     private const float LIVES_X = -8f;
     private const float LIVES_INITIAL_Y = 4f;
 
     private const int MAX_INPUTS = 12;
 
+    public TargetSummaryController targetSummaryPrefab;
     public TargetController targetPrefab;
     public WireController wirePrefab;
     public PlayerController playerPrefab;
@@ -26,7 +27,14 @@ public class View : MonoBehaviour
 
     public void init() {
         constructTargetViews();
+        constructTargetSummary();
         constructInputViews();
+    }
+
+    private void constructTargetSummary() {
+        TargetSummaryController targetSummary = Instantiate(targetSummaryPrefab);
+        float posY = INITIAL_Y + this.targets[0].transform.localScale.y/2 + targetSummary.transform.localScale.y/2 + 0.10f; //0.10f = Y_INCREMENT - height of targetPrefab
+        targetSummary.transform.position = new Vector3(0, posY, 0);
     }
 
     private void constructTargetViews() {
@@ -85,8 +93,6 @@ public class View : MonoBehaviour
     public PlayerController createPlayer()
     {
         this.player = Instantiate<PlayerController>(playerPrefab); 
-        float posX = this.targets[0].transform.position.x - (this.targets[0].transform.localScale.x/2);
-        posX = posX - this.inputs[0].transform.localScale.x * 3 - 50;
         return this.player;
     }
 

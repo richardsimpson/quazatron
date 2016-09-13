@@ -231,6 +231,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 955582bf9784d4c04b9c6e9c25c7f076, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetSummaryPrefab: {fileID: 114000014258696478, guid: 7c829f12fd9b5436390889a5dbef27a1,
+    type: 2}
   targetPrefab: {fileID: 114000011523469340, guid: 05cdd464c08854d1c851df81159e9280,
     type: 2}
   wirePrefab: {fileID: 114000011219656882, guid: 9b74b1b0a289c4535be1c869e807508a,

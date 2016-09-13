@@ -18,8 +18,8 @@ public class PlayerController : MonoBehaviour
     private bool fireKeyDown  = true;
 
     private const float INITIAL_X = -5.46f;
-    private const float INITIAL_Y = 4f;
-    private const float MOVE_BY_Y = 0.75f;
+    private const float INITIAL_Y = 3f;
+    private const float MOVE_BY_Y = 0.60f;
 
     public void reset()
     {

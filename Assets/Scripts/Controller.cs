@@ -22,17 +22,17 @@ public class Controller : MonoBehaviour
         this.view = view;
 
         // add listeners to all model events.
-        BoardObject[] inputs = this.model.getInputs();
-        for (int i = 0 ; i < inputs.Length ; i++) {
+        List<BoardObject> inputs = this.model.getInputs();
+        for (int i = 0 ; i < inputs.Count ; i++) {
             addBoardObjectActivatedEventListener(inputs[i]);
         }
         this.model.zapFired += onZapFired;
 
         // create the view - one component for each element in the model.
-        this.view.init();
+        this.view.init(inputs);
 
         // Create the map/dictionary of model -> view elements, so can instruct changes in the view.
-        List<WireController> inputViews = this.view.getInputs();
+        List<AbstractBoardObjectController> inputViews = this.view.getInputs();
         addToDictionary(inputs, inputViews);
 
         // setup the player (view)
@@ -51,14 +51,16 @@ public class Controller : MonoBehaviour
         this.model.getCurrentPlayer().playerMoved += onPlayerMoved;
     }
 
-    private void addToDictionary(BoardObject[] inputs, List<WireController> inputViews) {
-        for (int i = 0 ; i < inputs.Length ; i++) {
+    private void addToDictionary(List<BoardObject> inputs, List<AbstractBoardObjectController> inputViews) {
+        for (int i = 0 ; i < inputs.Count ; i++) {
             addToDictionary(inputs[i], inputViews[i]);
         }
     }
 
     private void addToDictionary(BoardObject input, AbstractBoardObjectController inputView) {
-        this.modelToViewBoardObjects.Add(input, inputView);
+        if (!this.modelToViewBoardObjects.ContainsKey(input)) {
+            this.modelToViewBoardObjects.Add(input, inputView);
+        }
 
         for (int i = 0 ; i < input.getOutputs().Count ; i++) {
             addToDictionary(input.getOutputs()[i], inputView.getOutputs()[i]);

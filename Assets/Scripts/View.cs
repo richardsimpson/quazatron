@@ -16,19 +16,31 @@ public class View : MonoBehaviour
     public TargetSummaryController targetSummaryPrefab;
     public TargetController targetPrefab;
     public WireController wirePrefab;
+    public InitiatorController initiatorPrefab;
+    public SwapperController swapperPrefab;
+    public TerminatorController terminatorPrefab;
+    public ConnectorController connectorPrefab;
     public PlayerController playerPrefab;
 
     private List<TargetController> targets = new List<TargetController>();
-    private List<WireController> inputs = new List<WireController>();
+    private List<AbstractBoardObjectController> inputs = new List<AbstractBoardObjectController>();
 
     private PlayerController player;
     private List<PlayerController> playerLives = new List<PlayerController>();
     private List<PlayerController> oldPlayers = new List<PlayerController>();
 
-    public void init() {
+    private float colZeroXPos;
+    private float colWidth;
+
+    public void init(List<BoardObject> inputs) {
+        this.colZeroXPos = targetPrefab.transform.position.x - (targetPrefab.transform.localScale.x/2)
+            - (wirePrefab.transform.localScale.x/2) - (wirePrefab.transform.localScale.x * 2);
+
+        this.colWidth = wirePrefab.transform.localScale.x;
+
         constructTargetViews();
         constructTargetSummary();
-        constructInputViews();
+        this.inputs = constructInputViews(inputs);
     }
 
     private void constructTargetSummary() {
@@ -50,34 +62,129 @@ public class View : MonoBehaviour
         }
     }
 
-    private WireController constructWire(int column, float yPos) {
+    // TODO: See if these methods can be collapsed into a single one
+    private WireController constructWire(int column, int row) {
+        float yPos = INITIAL_Y - (row * Y_INCREMENT);
+
         WireController result = Instantiate(wirePrefab);
 
-        float colZeroXPos = this.targets[0].transform.position.x - (this.targets[0].transform.localScale.x/2)
-            - (result.transform.localScale.x/2);
-
-        float wireWidth = result.transform.localScale.x;
-
-        result.transform.position = new Vector3(colZeroXPos-(wireWidth*column), yPos, 0);
+        result.transform.position = new Vector3(this.colZeroXPos+(this.colWidth*column), yPos, 0);
         return result;
     }
 
-    private void constructInputViews() {
-        float yPos = INITIAL_Y;
+    private InitiatorController constructInitiator(int column, int row) {
+        float yPos = INITIAL_Y - (row * Y_INCREMENT);
 
-        for (int index = 0 ; index < MAX_INPUTS ; index++) {
-            WireController wire3 = constructWire(0, yPos);
-            WireController wire2 = constructWire(1, yPos);
-            WireController wire1 = constructWire(2, yPos);
+        InitiatorController result = Instantiate(initiatorPrefab);
 
-            wire1.AddOutput(wire2);
-            wire2.AddOutput(wire3);
-            wire3.AddOutput(this.targets[index]);
+        result.transform.position = new Vector3(this.colZeroXPos+(this.colWidth*column), yPos, 0);
+        return result;
+    }
 
-            this.inputs.Add(wire1);
+    private SwapperController constructSwapper(int column, int row) {
+        float yPos = INITIAL_Y - (row * Y_INCREMENT);
 
-            yPos = yPos - Y_INCREMENT;
+        SwapperController result = Instantiate(swapperPrefab);
+
+        result.transform.position = new Vector3(this.colZeroXPos+(this.colWidth*column), yPos, 0);
+        return result;
+    }
+
+    private TerminatorController constructTerminator(int column, int row) {
+        float yPos = INITIAL_Y - (row * Y_INCREMENT);
+
+        TerminatorController result = Instantiate(terminatorPrefab);
+
+        result.transform.position = new Vector3(this.colZeroXPos+(this.colWidth*column), yPos, 0);
+        return result;
+    }
+
+    private ConnectorController constructConnector(int column, int row) {
+        float yPos = INITIAL_Y - (row * Y_INCREMENT);
+
+        ConnectorController result = Instantiate(connectorPrefab);
+
+        result.transform.position = new Vector3(this.colZeroXPos+(this.colWidth*column), yPos, 0);
+        return result;
+    }
+
+    private List<AbstractBoardObjectController> constructInputViews(List<BoardObject> modelInputs) {
+        return constructViews(modelInputs, 0, 0);
+    }
+
+    private List<AbstractBoardObjectController> constructViews(List<BoardObject> modelInputs, int column, int row) {
+        // traverse the modelInputs, from first inputs through to the targets, depth first.
+        // this should allow us to efficiently cover all possible board arrangements.
+        List<AbstractBoardObjectController> result = new List<AbstractBoardObjectController>();
+
+        for (int rowOffset = 0 ; rowOffset < modelInputs.Count ; rowOffset++) {
+            result.Add(constructBoardObjectView(modelInputs[rowOffset], column, row+rowOffset));
         }
+
+        return result;
+    }
+
+    // TODO: Account for Connectors that have two inputs - these need to be created in the row below the current one.
+    // TODO: Account for Connectors that have two inputs - need to check if an output leads to the SECOND input of a Connector, and 
+    //       don't create it again.
+
+    private AbstractBoardObjectController constructBoardObjectView(BoardObject modelInput, int column, int row) {
+        if (modelInput is Wire) {
+            WireController boardObject = constructWire(column, row);
+            List<AbstractBoardObjectController> outputs = constructViews(modelInput.getOutputs(), column+1, row);
+            boardObject.AddOutputs(outputs);
+            return boardObject;
+        }
+
+        if (modelInput is Connector) {
+            ConnectorController boardObject = constructConnector(column, row);
+
+            List<BoardObject> modelOutputs = modelInput.getOutputs();
+            if (modelOutputs.Count == 1) {
+                List<AbstractBoardObjectController> outputs = constructViews(modelOutputs, column+1, row);
+                boardObject.AddOutputs(outputs);
+            }
+            else if (modelOutputs.Count == 2) {
+                List<BoardObject> modelOutputs1 = new List<BoardObject>();
+                List<BoardObject> modelOutputs2 = new List<BoardObject>();
+                modelOutputs1.Add(modelOutputs[0]);
+                modelOutputs2.Add(modelOutputs[1]);
+                List<AbstractBoardObjectController> outputs1 = constructViews(modelOutputs1, column+1, row-1);
+                List<AbstractBoardObjectController> outputs2 = constructViews(modelOutputs2, column+1, row+1);
+                boardObject.AddOutputs(outputs1);
+                boardObject.AddOutputs(outputs2);
+            }
+            else {
+                throw new Exception("Unexpected number of outputs in Connector");
+            }
+
+            return boardObject;
+        }
+
+        if (modelInput is Initiator) {
+            InitiatorController boardObject = constructInitiator(column, row);
+            List<AbstractBoardObjectController> outputs = constructViews(modelInput.getOutputs(), column+1, row);
+            boardObject.AddOutputs(outputs);
+            return boardObject;
+        }
+
+        if (modelInput is Swapper) {
+            SwapperController boardObject = constructSwapper(column, row);
+            List<AbstractBoardObjectController> outputs = constructViews(modelInput.getOutputs(), column+1, row);
+            boardObject.AddOutputs(outputs);
+            return boardObject;
+        }
+
+        if (modelInput is Terminator) {
+            TerminatorController boardObject = constructTerminator(column, row);
+            return boardObject;
+        }
+
+        if (modelInput is Target) {
+            return this.targets[row];
+        }
+
+        throw new Exception("Unexpected model object type");
     }
 
     public List<TargetController> getTargets()
@@ -85,7 +192,7 @@ public class View : MonoBehaviour
         return this.targets;
     }
 
-    public List<WireController> getInputs()
+    public List<AbstractBoardObjectController> getInputs()
     {
         return this.inputs;
     }

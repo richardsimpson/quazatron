@@ -25,7 +25,7 @@ public class Model : MonoBehaviour
         return this.gameBoard.getTargets();
     }
 
-    public BoardObject[] getInputs() {
+    public List<BoardObject> getInputs() {
         return this.gameBoard.getInputs();
     }
 

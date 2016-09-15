@@ -8,5 +8,9 @@ public class Connector : AbstractBoardObject
             AddOutput(outputs[i]);
         }
 	}
+
+    public Connector(BoardObject output) : base() {
+        AddOutput(output);
+    }
 }
 

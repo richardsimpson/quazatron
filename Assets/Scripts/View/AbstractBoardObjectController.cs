@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AbstractBoardObjectController : MonoBehaviour
 {
+    protected Color YELLOW = new Color(1F, 1F, 0F);
+
     private List<AbstractBoardObjectController> outputs = new List<AbstractBoardObjectController>();
 
     public AbstractBoardObjectController() {

@@ -2,8 +2,6 @@
 
 public class WireController : AbstractBoardObjectController {
 
-    private Color YELLOW = new Color(1F, 1F, 0F);
-
     private SpriteRenderer wireRenderer;
 
     // Use this for initialization

@@ -3,8 +3,6 @@ using System.Collections;
 
 public class TargetController : AbstractBoardObjectController {
 
-    private Color YELLOW = new Color(1F, 1F, 0F);
-
     private SpriteRenderer targetRenderer;
 
 	// Use this for initialization

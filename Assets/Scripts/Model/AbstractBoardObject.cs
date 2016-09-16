@@ -22,8 +22,16 @@ public abstract class AbstractBoardObject : BoardObject
             boardObjectActivated(this, eventArgs);
     }
 
-    public virtual void inputActivated(BoardObject input) {
-        throw new NotImplementedException();
+    // TODO: For Connectors, only execute OnBoardObjectActivated and the outputs' inputActivated if ALL inputs are activated.
+    //       This means the board objects ALSO need to know what their inputs are.
+    public void inputActivated(BoardObject input) {
+        OnBoardObjectActivated(EventArgs.Empty);
+
+        for (int i = 0 ; i < this.outputs.Count ; i++) {
+            outputs[i].inputActivated(this);
+        }
+
     }
+
 }
 

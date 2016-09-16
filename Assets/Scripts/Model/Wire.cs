@@ -8,16 +8,6 @@ public class Wire : AbstractBoardObject
         AddOutput(output);
 	}
 
-    public override void inputActivated(BoardObject input) {
-        OnBoardObjectActivated(EventArgs.Empty);
-
-        List<BoardObject> outputs = getOutputs();
-        for (int i = 0 ; i < outputs.Count ; i++) {
-            outputs[i].inputActivated(this);
-        }
-
-    }
-
 }
 
 

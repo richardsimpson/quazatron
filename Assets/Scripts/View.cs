@@ -134,9 +134,7 @@ public class View : MonoBehaviour
         return result;
     }
 
-    // TODO: Account for Connectors that have two inputs - these need to be created in the row below the current one.
-    // TODO: Account for Connectors that have two inputs - need to check if an output leads to the SECOND input of a Connector, and 
-    //       don't create it again.
+    // TODO: Account for Connectors that have two inputs - need to switch to a 2D array in the model AND view.
 
     private AbstractBoardObjectController constructBoardObjectView(BoardObject modelInput, int column, int row) {
         if (modelInput is Wire) {
@@ -147,14 +145,16 @@ public class View : MonoBehaviour
         }
 
         if (modelInput is Connector) {
-            ConnectorController boardObject = constructConnector((Connector)modelInput, column, row);
+            ConnectorController boardObject;
 
             List<BoardObject> modelOutputs = modelInput.getOutputs();
             if (modelOutputs.Count == 1) {
-                List<AbstractBoardObjectController> outputs = constructViews(modelOutputs, column+1, row);
+                boardObject = constructConnector((Connector)modelInput, column, row+1);
+                List<AbstractBoardObjectController> outputs = constructViews(modelOutputs, column+1, row+1);
                 boardObject.AddOutputs(outputs);
             }
             else if (modelOutputs.Count == 2) {
+                boardObject = constructConnector((Connector)modelInput, column, row);
                 List<BoardObject> modelOutputs1 = new List<BoardObject>();
                 List<BoardObject> modelOutputs2 = new List<BoardObject>();
                 modelOutputs1.Add(modelOutputs[0]);

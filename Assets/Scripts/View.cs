@@ -19,7 +19,8 @@ public class View : MonoBehaviour
     public InitiatorController initiatorPrefab;
     public SwapperController swapperPrefab;
     public TerminatorController terminatorPrefab;
-    public ConnectorController connectorPrefab;
+    public ConnectorController connectorOneOutputPrefab;
+    public ConnectorController connectorTwoOutputPrefab;
     public PlayerController playerPrefab;
 
     private List<TargetController> targets = new List<TargetController>();
@@ -99,10 +100,19 @@ public class View : MonoBehaviour
         return result;
     }
 
-    private ConnectorController constructConnector(int column, int row) {
+    private ConnectorController constructConnector(Connector modelInput, int column, int row) {
         float yPos = INITIAL_Y - (row * Y_INCREMENT);
 
-        ConnectorController result = Instantiate(connectorPrefab);
+        ConnectorController result;
+        if (modelInput.getOutputs().Count == 1) {
+            result = Instantiate(this.connectorOneOutputPrefab);
+        }
+        else if (modelInput.getOutputs().Count == 2) {
+            result = Instantiate(this.connectorTwoOutputPrefab);
+        }
+        else {
+            throw new Exception("Invalid number of outputs for Connector");
+        }
 
         result.transform.position = new Vector3(this.colZeroXPos+(this.colWidth*column), yPos, 0);
         return result;
@@ -137,7 +147,7 @@ public class View : MonoBehaviour
         }
 
         if (modelInput is Connector) {
-            ConnectorController boardObject = constructConnector(column, row);
+            ConnectorController boardObject = constructConnector((Connector)modelInput, column, row);
 
             List<BoardObject> modelOutputs = modelInput.getOutputs();
             if (modelOutputs.Count == 1) {

@@ -5,15 +5,21 @@ using UnityEngine;
 // extends MonoBehaviour so that we can wire it into the Application object in Unity
 public class Controller : MonoBehaviour
 {
-    private Dictionary<BoardObject, AbstractBoardObjectController> modelToViewBoardObjects = new Dictionary<BoardObject, AbstractBoardObjectController>();
-
     private Model model;
     private View view;
 
-    private void addBoardObjectActivatedEventListener(BoardObject boardObject) {
-        boardObject.boardObjectActivated += onBoardObjectActivated;
-        for (int i = 0 ; i < boardObject.getOutputs().Count ; i++) {
-            addBoardObjectActivatedEventListener(boardObject.getOutputs()[i]);
+    private BoardObject[,] board;
+    private AbstractBoardObjectController[,] boardViews;
+
+    private Dictionary<BoardObject, AbstractBoardObjectController> modelToViewBoardObjects = new Dictionary<BoardObject, AbstractBoardObjectController>();
+
+    private void addBoardObjectActivatedEventListeners(BoardObject[,] board) {
+        for (int i = 0 ; i < board.GetLength(0) ; i++) {
+            for (int j = 0 ; j < board.GetLength(1) ; j++) {
+                if (board[i,j] != null) {
+                    board[i,j].boardObjectActivated += onBoardObjectActivated;
+                }
+            }
         }
     }
 
@@ -22,18 +28,17 @@ public class Controller : MonoBehaviour
         this.view = view;
 
         // add listeners to all model events.
-        List<BoardObject> inputs = this.model.getInputs();
-        for (int i = 0 ; i < inputs.Count ; i++) {
-            addBoardObjectActivatedEventListener(inputs[i]);
-        }
+        this.board = this.model.getBoard();
+        addBoardObjectActivatedEventListeners(board);
+
         this.model.zapFired += onZapFired;
 
         // create the view - one component for each element in the model.
-        this.view.init(inputs);
+        this.view.init(board);
 
         // Create the map/dictionary of model -> view elements, so can instruct changes in the view.
-        List<AbstractBoardObjectController> inputViews = this.view.getInputs();
-        addToDictionary(inputs, inputViews);
+        this.boardViews = this.view.getBoard();
+        addToDictionary(board, boardViews);
 
         // setup the player (view)
         PlayerController player = this.view.createPlayer();
@@ -51,19 +56,13 @@ public class Controller : MonoBehaviour
         this.model.getCurrentPlayer().playerMoved += onPlayerMoved;
     }
 
-    private void addToDictionary(List<BoardObject> inputs, List<AbstractBoardObjectController> inputViews) {
-        for (int i = 0 ; i < inputs.Count ; i++) {
-            addToDictionary(inputs[i], inputViews[i]);
-        }
-    }
-
-    private void addToDictionary(BoardObject input, AbstractBoardObjectController inputView) {
-        if (!this.modelToViewBoardObjects.ContainsKey(input)) {
-            this.modelToViewBoardObjects.Add(input, inputView);
-        }
-
-        for (int i = 0 ; i < input.getOutputs().Count ; i++) {
-            addToDictionary(input.getOutputs()[i], inputView.getOutputs()[i]);
+    private void addToDictionary(BoardObject[,] board, AbstractBoardObjectController[,] boardViews) {
+        for (int i = 0 ; i < board.GetLength(0) ; i++) {
+            for (int j = 0 ; j < board.GetLength(1) ; j++) {
+                if (board[i,j] != null) {
+                    this.modelToViewBoardObjects.Add(board[i,j], boardViews[i,j]);
+                }
+            }
         }
     }
 

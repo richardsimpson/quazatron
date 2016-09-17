@@ -25,8 +25,8 @@ public class Model : MonoBehaviour
         return this.gameBoard.getTargets();
     }
 
-    public List<BoardObject> getInputs() {
-        return this.gameBoard.getInputs();
+    public BoardObject[,] getBoard() {
+        return this.gameBoard.getBoard();
     }
 
     public Player getCurrentPlayer() {

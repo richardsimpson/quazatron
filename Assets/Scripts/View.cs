@@ -11,7 +11,7 @@ public class View : MonoBehaviour
     private const float LIVES_X = -8f;
     private const float LIVES_INITIAL_Y = 4f;
 
-    private const int MAX_INPUTS = 12;
+    private const int ROW_COUNT = 12;
 
     public TargetSummaryController targetSummaryPrefab;
     public TargetController targetPrefab;
@@ -24,7 +24,7 @@ public class View : MonoBehaviour
     public PlayerController playerPrefab;
 
     private List<TargetController> targets = new List<TargetController>();
-    private List<AbstractBoardObjectController> inputs = new List<AbstractBoardObjectController>();
+    private AbstractBoardObjectController[,] boardViews = new AbstractBoardObjectController[3, ROW_COUNT];
 
     private PlayerController player;
     private List<PlayerController> playerLives = new List<PlayerController>();
@@ -33,7 +33,7 @@ public class View : MonoBehaviour
     private float colZeroXPos;
     private float colWidth;
 
-    public void init(List<BoardObject> inputs) {
+    public void init(BoardObject[,] board) {
         this.colZeroXPos = targetPrefab.transform.position.x - (targetPrefab.transform.localScale.x/2)
             - (wirePrefab.transform.localScale.x/2) - (wirePrefab.transform.localScale.x * 2);
 
@@ -41,7 +41,7 @@ public class View : MonoBehaviour
 
         constructTargetViews();
         constructTargetSummary();
-        this.inputs = constructInputViews(inputs);
+        constructInputViews(board);
     }
 
     private void constructTargetSummary() {
@@ -53,7 +53,7 @@ public class View : MonoBehaviour
     private void constructTargetViews() {
         float yPos = INITIAL_Y;
 
-        for (int index = 0 ; index < MAX_INPUTS ; index++) {
+        for (int index = 0 ; index < ROW_COUNT ; index++) {
             TargetController newTarget = Instantiate(targetPrefab);
             newTarget.transform.position = new Vector3(0, yPos, 0);
 
@@ -118,30 +118,20 @@ public class View : MonoBehaviour
         return result;
     }
 
-    private List<AbstractBoardObjectController> constructInputViews(List<BoardObject> modelInputs) {
-        return constructViews(modelInputs, 0, 0);
-    }
-
-    private List<AbstractBoardObjectController> constructViews(List<BoardObject> modelInputs, int column, int row) {
-        // traverse the modelInputs, from first inputs through to the targets, depth first.
-        // this should allow us to efficiently cover all possible board arrangements.
-        List<AbstractBoardObjectController> result = new List<AbstractBoardObjectController>();
-
-        for (int rowOffset = 0 ; rowOffset < modelInputs.Count ; rowOffset++) {
-            result.Add(constructBoardObjectView(modelInputs[rowOffset], column, row+rowOffset));
+    private void constructInputViews(BoardObject[,] board) {
+        for (int i = 0 ; i < board.GetLength(0) ; i++) {
+            for (int j = 0 ; j < board.GetLength(1) ; j++) {
+                if (board[i,j] != null) {
+                    constructBoardObjectView(board[i,j], i, j);
+                }
+            }
         }
-
-        return result;
     }
 
-    // TODO: Account for Connectors that have two inputs - need to switch to a 2D array in the model AND view.
-
-    private AbstractBoardObjectController constructBoardObjectView(BoardObject modelInput, int column, int row) {
+    private void constructBoardObjectView(BoardObject modelInput, int column, int row) {
         if (modelInput is Wire) {
-            WireController boardObject = constructWire(column, row);
-            List<AbstractBoardObjectController> outputs = constructViews(modelInput.getOutputs(), column+1, row);
-            boardObject.AddOutputs(outputs);
-            return boardObject;
+            this.boardViews[column, row] = constructWire(column, row);
+            return;
         }
 
         if (modelInput is Connector) {
@@ -149,49 +139,31 @@ public class View : MonoBehaviour
 
             List<BoardObject> modelOutputs = modelInput.getOutputs();
             if (modelOutputs.Count == 1) {
-                boardObject = constructConnector((Connector)modelInput, column, row+1);
-                List<AbstractBoardObjectController> outputs = constructViews(modelOutputs, column+1, row+1);
-                boardObject.AddOutputs(outputs);
+                this.boardViews[column, row] = constructConnector((Connector)modelInput, column, row);
             }
             else if (modelOutputs.Count == 2) {
-                boardObject = constructConnector((Connector)modelInput, column, row);
-                List<BoardObject> modelOutputs1 = new List<BoardObject>();
-                List<BoardObject> modelOutputs2 = new List<BoardObject>();
-                modelOutputs1.Add(modelOutputs[0]);
-                modelOutputs2.Add(modelOutputs[1]);
-                List<AbstractBoardObjectController> outputs1 = constructViews(modelOutputs1, column+1, row-1);
-                List<AbstractBoardObjectController> outputs2 = constructViews(modelOutputs2, column+1, row+1);
-                boardObject.AddOutputs(outputs1);
-                boardObject.AddOutputs(outputs2);
+                this.boardViews[column, row] = constructConnector((Connector)modelInput, column, row);
             }
             else {
                 throw new Exception("Unexpected number of outputs in Connector");
             }
 
-            return boardObject;
+            return;
         }
 
         if (modelInput is Initiator) {
-            InitiatorController boardObject = constructInitiator(column, row);
-            List<AbstractBoardObjectController> outputs = constructViews(modelInput.getOutputs(), column+1, row);
-            boardObject.AddOutputs(outputs);
-            return boardObject;
+            this.boardViews[column, row] = constructInitiator(column, row);
+            return;
         }
 
         if (modelInput is Swapper) {
-            SwapperController boardObject = constructSwapper(column, row);
-            List<AbstractBoardObjectController> outputs = constructViews(modelInput.getOutputs(), column+1, row);
-            boardObject.AddOutputs(outputs);
-            return boardObject;
+            this.boardViews[column, row] = constructSwapper(column, row);
+            return;
         }
 
         if (modelInput is Terminator) {
-            TerminatorController boardObject = constructTerminator(column, row);
-            return boardObject;
-        }
-
-        if (modelInput is Target) {
-            return this.targets[row];
+            this.boardViews[column, row] = constructTerminator(column, row);
+            return;
         }
 
         throw new Exception("Unexpected model object type");
@@ -202,9 +174,9 @@ public class View : MonoBehaviour
         return this.targets;
     }
 
-    public List<AbstractBoardObjectController> getInputs()
+    public AbstractBoardObjectController[,] getBoard()
     {
-        return this.inputs;
+        return this.boardViews;
     }
 
     public PlayerController createPlayer()

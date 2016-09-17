@@ -7,6 +7,9 @@ public abstract class AbstractBoardObject : BoardObject
     public event BoardObjectActivatedEventHandler boardObjectActivated;
 
     private List<BoardObject> outputs = new List<BoardObject>();
+    private List<AbstractBoardObject> inputs = new List<AbstractBoardObject>();
+
+    private bool activated = false;
 
 	protected void AddOutput(BoardObject output) {
         this.outputs.Add(output);
@@ -16,21 +19,35 @@ public abstract class AbstractBoardObject : BoardObject
 		return this.outputs;
 	}
 
+    public void AddInput(AbstractBoardObject input)
+    {
+        this.inputs.Add(input);
+    }
+
     protected void OnBoardObjectActivated(EventArgs eventArgs) {
         Debug.Log("OnBoardObjectActivated.");
         if (boardObjectActivated != null)
             boardObjectActivated(this, eventArgs);
     }
 
-    // TODO: For Connectors, only execute OnBoardObjectActivated and the outputs' inputActivated if ALL inputs are activated.
-    //       This means the board objects ALSO need to know what their inputs are.
     public void inputActivated(BoardObject input) {
-        OnBoardObjectActivated(EventArgs.Empty);
+        // Only execute OnBoardObjectActivated and the outputs' inputActivated if ALL inputs are activated.
 
-        for (int i = 0 ; i < this.outputs.Count ; i++) {
-            outputs[i].inputActivated(this);
+        bool allInputsActivated = true;
+        for (int i = 0 ; i < inputs.Count ; i++) {
+            if (!inputs[i].activated) {
+                allInputsActivated = false;
+            }
         }
 
+        if (allInputsActivated) {
+            activated = true;
+            OnBoardObjectActivated(EventArgs.Empty);
+
+            for (int i = 0 ; i < this.outputs.Count ; i++) {
+                outputs[i].inputActivated(this);
+            }
+        }
     }
 
 }

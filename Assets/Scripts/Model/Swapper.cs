@@ -2,8 +2,9 @@
 
 public class Swapper : AbstractBoardObject
 {
-    public Swapper(BoardObject output) : base() {
+    public Swapper(AbstractBoardObject output) : base() {
         AddOutput(output);
+        output.AddInput(this);
     }
 }
 

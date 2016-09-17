@@ -22,7 +22,7 @@ public class GameBoard
     private const int ROW_COUNT = 12;
 
     private Target[] targets = new Target[ROW_COUNT];
-    private BoardObject[,] board = new BoardObject[3,ROW_COUNT];
+    private AbstractBoardObject[,] board = new AbstractBoardObject[3,ROW_COUNT];
 
 	public GameBoard()
 	{
@@ -62,7 +62,7 @@ public class GameBoard
 
         this.board[1, 0] = new Wire(this.board[2, 0]);
         this.board[1, 1] = null;
-        List<BoardObject> outputs = new List<BoardObject>();
+        List<AbstractBoardObject> outputs = new List<AbstractBoardObject>();
         outputs.Add(this.board[2, 1]);
         outputs.Add(this.board[2, 3]);
         this.board[1, 2] = new Connector(outputs);

@@ -2,8 +2,9 @@
 
 public class Initiator : AbstractBoardObject
 {
-    public Initiator(BoardObject output) : base() {
+    public Initiator(AbstractBoardObject output) : base() {
         AddOutput(output);
+        output.AddInput(this);
     }
 }
 

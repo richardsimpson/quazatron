@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Wire : AbstractBoardObject
 {
-    public Wire(BoardObject output) : base() {
+    public Wire(AbstractBoardObject output) : base() {
         AddOutput(output);
+        output.AddInput(this);
 	}
 
 }

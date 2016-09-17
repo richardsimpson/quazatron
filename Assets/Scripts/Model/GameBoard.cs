@@ -21,13 +21,13 @@ public class GameBoard
 {
     private const int ROW_COUNT = 12;
 
-    private Target[] targets = new Target[ROW_COUNT];
+    private List<Target> targets = new List<Target>();
     private AbstractBoardObject[,] board = new AbstractBoardObject[3,ROW_COUNT];
 
 	public GameBoard()
 	{
-        for (int i = 0 ; i < this.targets.Length ; i++) {
-            this.targets[i] = new Target();
+        for (int i = 0 ; i < ROW_COUNT ; i++) {
+            this.targets.Add(new Target());
         }
 
         // setup this board:
@@ -90,7 +90,7 @@ public class GameBoard
         this.board[0, 11] = new Wire(this.board[1, 11]);
 	}
 
-    public Target[] getTargets() {
+    public List<Target> getTargets() {
         return this.targets;
     }
 

@@ -21,7 +21,7 @@ public class Model : MonoBehaviour
         this.currentPlayer = new Player();
     }
 
-    public Target[] getTargets() {
+    public List<Target> getTargets() {
         return this.gameBoard.getTargets();
     }
 

@@ -8,9 +8,6 @@ public class Controller : MonoBehaviour
     private Model model;
     private View view;
 
-    private BoardObject[,] board;
-    private AbstractBoardObjectController[,] boardViews;
-
     private Dictionary<BoardObject, AbstractBoardObjectController> modelToViewBoardObjects = new Dictionary<BoardObject, AbstractBoardObjectController>();
 
     private void addBoardObjectActivatedEventListeners(BoardObject[,] board) {
@@ -28,8 +25,13 @@ public class Controller : MonoBehaviour
         this.view = view;
 
         // add listeners to all model events.
-        this.board = this.model.getBoard();
+        BoardObject[,] board = this.model.getBoard();
         addBoardObjectActivatedEventListeners(board);
+
+        List<Target> targets = this.model.getTargets();
+        for (int i = 0 ; i < targets.Count ; i++) {
+            targets[i].boardObjectActivated += onBoardObjectActivated;
+        }
 
         this.model.zapFired += onZapFired;
 
@@ -37,8 +39,10 @@ public class Controller : MonoBehaviour
         this.view.init(board);
 
         // Create the map/dictionary of model -> view elements, so can instruct changes in the view.
-        this.boardViews = this.view.getBoard();
+        AbstractBoardObjectController[,] boardViews = this.view.getBoard();
+        List<TargetController> targetViews = this.view.getTargets();
         addToDictionary(board, boardViews);
+        addToDictionary(targets, targetViews);
 
         // setup the player (view)
         PlayerController player = this.view.createPlayer();
@@ -63,6 +67,12 @@ public class Controller : MonoBehaviour
                     this.modelToViewBoardObjects.Add(board[i,j], boardViews[i,j]);
                 }
             }
+        }
+    }
+
+    private void addToDictionary(List<Target> targets, List<TargetController> targetViews) {
+        for (int i = 0 ; i < targets.Count ; i++) {
+            this.modelToViewBoardObjects.Add(targets[i], targetViews[i]);
         }
     }
 

@@ -21,6 +21,8 @@ public class PlayerController : MonoBehaviour
     private const float INITIAL_Y = 3f;
     private const float MOVE_BY_Y = 0.60f;
 
+    private int playerPosition = 0;
+
     public void reset()
     {
         transform.position = new Vector3(INITIAL_X, INITIAL_Y, 0);
@@ -71,7 +73,16 @@ public class PlayerController : MonoBehaviour
 
     public void onPlayerMoved(int position)
     {
+        this.playerPosition = position;
         transform.position = new Vector3(INITIAL_X, INITIAL_Y - (MOVE_BY_Y*position));
+    }
+
+    public int getPlayerPosition() {
+        return this.playerPosition;
+    }
+
+    public void setActive(bool active) {
+        this.gameObject.SetActive(active);
     }
 }
 

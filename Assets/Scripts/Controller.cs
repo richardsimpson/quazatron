@@ -36,6 +36,7 @@ public class Controller : MonoBehaviour
         }
 
         this.model.zapFired += onZapFired;
+        this.model.zapExpired += onZapExpired;
         this.model.getGameBoard().targetSummaryActivated += onTargetSummaryActivated;
         this.model.getGameBoard().targetSummaryDeactivated += onTargetSummaryDeactivated;
 
@@ -83,6 +84,11 @@ public class Controller : MonoBehaviour
     private void onZapFired(Model sender, EventArgs e)
     {
         this.view.onZapFired();
+    }
+
+    private void onZapExpired(Model sender, ZapExpiredEventArgs e)
+    {
+        this.view.onZapExpired(e.playerPosition);
     }
 
     void onTargetSummaryActivated(GameBoard sender, EventArgs e)

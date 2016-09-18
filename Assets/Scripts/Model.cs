@@ -3,6 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public delegate void ZapFiredEventHandler(Model sender, EventArgs e);
+public delegate void ZapExpiredEventHandler(Model sender, ZapExpiredEventArgs e);
+
+public class ZapExpiredEventArgs : EventArgs
+{
+    public int playerPosition;
+
+    public ZapExpiredEventArgs(int playerPosition)
+    {
+        this.playerPosition = playerPosition;
+    }    
+
+}
 
 // extends MonoBehaviour so that we can wire it into the Application object in Unity
 public class Model : MonoBehaviour
@@ -10,6 +22,7 @@ public class Model : MonoBehaviour
     private const int NUMBER_OF_LIVES = 8;
 
     public event ZapFiredEventHandler zapFired;
+    public event ZapExpiredEventHandler zapExpired;
 
     // Data
     private GameBoard gameBoard;
@@ -43,12 +56,18 @@ public class Model : MonoBehaviour
             zapFired(this, eventArgs);
     }
 
+    private void onZapExpired(ZapExpiredEventArgs eventArgs) {
+        Debug.Log("onZapExpired.");
+        if (zapExpired != null)
+            zapExpired(this, eventArgs);
+    }
+
     public void onFirePressed()
     {
         // Construct a new OldPlayer object
         OldPlayer oldPlayer = new OldPlayer(this.currentPlayer.getPlayerPosition());
 
-        // Add OldPlayer to a new 'old players' list.  These objects will eventually need to be removed when they timeout.
+        // Add OldPlayer to a new 'old players' list, and start a co-routine to remove them in the future
         this.oldPlayers.Add(oldPlayer);
         StartCoroutine(removePlayer(oldPlayer));
 
@@ -58,17 +77,15 @@ public class Model : MonoBehaviour
         // Reset the 'currentPlayer' object.
         this.currentPlayer.reset();
 
-        // Fire a 'zapFired' event 
+        // Fire a 'zapFired' event.  In the view this populates 'old player', and moves the zap onto the grid.
         onZapFired(EventArgs.Empty);
-
-        // TODO: When a zap expires, how do we tell the view which one? (add the OldPlayer to the zapFired event, and have
-        //       the controller remember this, and it's association with the View's currentPlayer.
     }
 
     private IEnumerator<WaitForSeconds> removePlayer(OldPlayer oldPlayer) {
         yield return new WaitForSeconds(5);
         Debug.Log("player removed");
         this.gameBoard.onPlayerRemoved(oldPlayer.getPlayerPosition());
+        onZapExpired(new ZapExpiredEventArgs(oldPlayer.getPlayerPosition()));
     }
 
     public void onPlayerMoveRequested(Direction direction)

@@ -29,7 +29,7 @@ public class View : MonoBehaviour
 
     private PlayerController player;
     private List<PlayerController> playerLives = new List<PlayerController>();
-    private List<PlayerController> oldPlayers = new List<PlayerController>();
+    private Dictionary<int, PlayerController> oldPlayers = new Dictionary<int, PlayerController>();
 
     private float colZeroXPos;
     private float colWidth;
@@ -221,7 +221,7 @@ public class View : MonoBehaviour
         this.player.enabled = false;
 
         // move it to the list of old players
-        oldPlayers.Add(this.player);
+        this.oldPlayers.Add(this.player.getPlayerPosition(), this.player);
 
         // take the last player object from the Lives list and 'reset' it to be at the initial player position (first wire).
         if (this.playerLives.Count > 0) {
@@ -232,6 +232,12 @@ public class View : MonoBehaviour
             // then enable it's script.
             this.player.enabled = true;
         }
+    }
+
+    public void onZapExpired(int playerPosition) {
+        // Find the entry in oldPlayers that corresponds to the specified playerPosition, then set it inactive.
+        this.oldPlayers[playerPosition].setActive(false);
+        this.oldPlayers.Remove(playerPosition);
     }
 
     public void onTargetSummaryActivated()

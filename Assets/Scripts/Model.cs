@@ -50,6 +50,7 @@ public class Model : MonoBehaviour
 
         // Add OldPlayer to a new 'old players' list.  These objects will eventually need to be removed when they timeout.
         this.oldPlayers.Add(oldPlayer);
+        StartCoroutine(removePlayer(oldPlayer));
 
         // activate the current 'player', to light up the wire, etc
         this.gameBoard.onFirePressed(this.currentPlayer.getPlayerPosition());
@@ -62,8 +63,12 @@ public class Model : MonoBehaviour
 
         // TODO: When a zap expires, how do we tell the view which one? (add the OldPlayer to the zapFired event, and have
         //       the controller remember this, and it's association with the View's currentPlayer.
+    }
 
-
+    private IEnumerator<WaitForSeconds> removePlayer(OldPlayer oldPlayer) {
+        yield return new WaitForSeconds(5);
+        Debug.Log("player removed");
+        this.gameBoard.onPlayerRemoved(oldPlayer.getPlayerPosition());
     }
 
     public void onPlayerMoveRequested(Direction direction)

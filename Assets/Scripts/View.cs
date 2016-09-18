@@ -199,14 +199,16 @@ public class View : MonoBehaviour
         return this.playerLives;
     }
 
-    public void onPlayerMoved(int position)
-    {
+    public void onPlayerMoved(int position) {
         this.player.onPlayerMoved(position);
     }
 
-    public void onBoardObjectActivated(AbstractBoardObjectController boardObjectController)
-    {
+    public void onBoardObjectActivated(AbstractBoardObjectController boardObjectController) {
         boardObjectController.onActivated();
+    }
+
+    public void onBoardObjectDeactivated(AbstractBoardObjectController boardObjectController) {
+        boardObjectController.onDeactivated();
     }
 
     public void onZapFired()
@@ -235,5 +237,10 @@ public class View : MonoBehaviour
     public void onTargetSummaryActivated()
     {
         this.targetSummary.onActivated();
+    }
+
+    public void onTargetSummaryDeactivated()
+    {
+        this.targetSummary.onDeactivated();
     }
 }

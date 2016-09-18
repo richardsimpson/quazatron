@@ -18,4 +18,9 @@ public class WireController : AbstractBoardObjectController {
     {
         wireRenderer.color = YELLOW;
     }
+
+    public override void onDeactivated()
+    {
+        wireRenderer.color = BLACK;
+    }
 }

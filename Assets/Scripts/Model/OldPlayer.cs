@@ -8,5 +8,9 @@ public class OldPlayer
     {
         this.playerPosition = playerPosition;
     }
+
+    public int getPlayerPosition() {
+        return this.playerPosition;
+    }
 }
 

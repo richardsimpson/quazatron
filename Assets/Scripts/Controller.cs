@@ -15,6 +15,7 @@ public class Controller : MonoBehaviour
             for (int j = 0 ; j < board.GetLength(1) ; j++) {
                 if (board[i,j] != null) {
                     board[i,j].boardObjectActivated += onBoardObjectActivated;
+                    board[i,j].boardObjectDeactivated += onBoardObjectDeactivated;
                 }
             }
         }
@@ -31,10 +32,12 @@ public class Controller : MonoBehaviour
         List<Target> targets = this.model.getTargets();
         for (int i = 0 ; i < targets.Count ; i++) {
             targets[i].boardObjectActivated += onBoardObjectActivated;
+            targets[i].boardObjectDeactivated += onBoardObjectDeactivated;
         }
 
         this.model.zapFired += onZapFired;
         this.model.getGameBoard().targetSummaryActivated += onTargetSummaryActivated;
+        this.model.getGameBoard().targetSummaryDeactivated += onTargetSummaryDeactivated;
 
         // create the view - one component for each element in the model.
         this.view.init(board);
@@ -87,6 +90,11 @@ public class Controller : MonoBehaviour
         this.view.onTargetSummaryActivated();
     }
 
+    void onTargetSummaryDeactivated(GameBoard sender, EventArgs e)
+    {
+        this.view.onTargetSummaryDeactivated();
+    }
+
     private void onPlayerMoveRequested(object sender, PlayerMoveRequestedEventArgs e) 
     {
         this.model.onPlayerMoveRequested(e.direction);
@@ -104,6 +112,10 @@ public class Controller : MonoBehaviour
 
     private void onBoardObjectActivated(BoardObject sender, EventArgs e) {
         this.view.onBoardObjectActivated(this.modelToViewBoardObjects[sender]);
+    }
+
+    private void onBoardObjectDeactivated(BoardObject sender, EventArgs e) {
+        this.view.onBoardObjectDeactivated(this.modelToViewBoardObjects[sender]);
     }
 
 }

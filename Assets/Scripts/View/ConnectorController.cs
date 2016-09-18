@@ -22,4 +22,11 @@ public class ConnectorController : AbstractBoardObjectController {
         }
     }
 
+    public override void onDeactivated()
+    {
+        for (int i = 0 ; i < wireRenderers.Count ; i++) {
+            wireRenderers[i].color = BLACK;
+        }
+    }
+
 }

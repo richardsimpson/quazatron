@@ -19,4 +19,10 @@ public class TargetController : AbstractBoardObjectController {
     {
         targetRenderer.color = YELLOW;
     }
+
+    public override void onDeactivated()
+    {
+        // do nothing here for now.  we do not want to swap colour unless the other player already has a 
+        // zap going to this target, or if they create a new one.
+    }
 }

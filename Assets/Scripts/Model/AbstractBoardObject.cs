@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class AbstractBoardObject : BoardObject
 {
     public event BoardObjectActivatedEventHandler boardObjectActivated;
+    public event BoardObjectDeactivatedEventHandler boardObjectDeactivated;
 
     private List<BoardObject> outputs = new List<BoardObject>();
     private List<AbstractBoardObject> inputs = new List<AbstractBoardObject>();
@@ -30,6 +31,12 @@ public abstract class AbstractBoardObject : BoardObject
             boardObjectActivated(this, eventArgs);
     }
 
+    protected void OnBoardObjectDeactivated(EventArgs eventArgs) {
+        Debug.Log("OnBoardObjectDeactivated.");
+        if (boardObjectDeactivated != null)
+            boardObjectDeactivated(this, eventArgs);
+    }
+
     public void inputActivated(BoardObject input) {
         // Only execute OnBoardObjectActivated and the outputs' inputActivated if ALL inputs are activated.
 
@@ -41,12 +48,21 @@ public abstract class AbstractBoardObject : BoardObject
         }
 
         if (allInputsActivated) {
-            activated = true;
+            this.activated = true;
             OnBoardObjectActivated(EventArgs.Empty);
 
             for (int i = 0 ; i < this.outputs.Count ; i++) {
                 outputs[i].inputActivated(this);
             }
+        }
+    }
+
+    public void inputDeactivated(BoardObject input) {
+        this.activated = false;
+        OnBoardObjectDeactivated(EventArgs.Empty);
+
+        for (int i = 0 ; i < this.outputs.Count ; i++) {
+            outputs[i].inputDeactivated(this);
         }
     }
 

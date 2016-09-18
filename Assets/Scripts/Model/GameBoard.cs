@@ -20,10 +20,12 @@ using UnityEngine;
 
 // NOTE: This will ultimately indicate which player is winning, via an enum (just like wires), but for now the event is empty.
 public delegate void TargetSummaryActivatedEventHandler(GameBoard sender, EventArgs e);
+public delegate void TargetSummaryDeactivatedEventHandler(GameBoard sender, EventArgs e);
 
 public class GameBoard
 {
     public event TargetSummaryActivatedEventHandler targetSummaryActivated;
+    public event TargetSummaryDeactivatedEventHandler targetSummaryDeactivated;
 
     private const int ROW_COUNT = 12;
 
@@ -34,7 +36,8 @@ public class GameBoard
 	{
         for (int i = 0 ; i < ROW_COUNT ; i++) {
             Target target = new Target();
-            target.boardObjectActivated += onTargetActivated;
+            target.boardObjectActivated += onTargetActivatedStateChanged;
+            target.boardObjectDeactivated += onTargetActivatedStateChanged;
             this.targets.Add(target);
         }
 
@@ -111,13 +114,24 @@ public class GameBoard
         this.board[0, playerPosition].inputActivated(null);
     }
 
+    public void onPlayerRemoved(int playerPosition)
+    {
+        this.board[0, playerPosition].inputDeactivated(null);
+    }
+
     protected void OnTargetSummaryActivated(EventArgs eventArgs) {
         Debug.Log("OnTargetSummaryActivated.");
         if (targetSummaryActivated != null)
             targetSummaryActivated(this, eventArgs);
     }
 
-    private void onTargetActivated(BoardObject sender, EventArgs e) {
+    protected void OnTargetSummaryDeactivated(EventArgs eventArgs) {
+        Debug.Log("OnTargetSummaryDeactivated.");
+        if (targetSummaryDeactivated != null)
+            targetSummaryDeactivated(this, eventArgs);
+    }
+
+    private void onTargetActivatedStateChanged(BoardObject sender, EventArgs e) {
         int activeCount = 0;
         for (int i = 0 ; i < this.targets.Count ; i++) {
             if (this.targets[i].isActivated()) {
@@ -125,8 +139,13 @@ public class GameBoard
             }
         }
 
+        // when we have two players, we should indicate who controls the target summary, so the view can 
+        // show it as Yellow, Black or Blue.  For now, just activate / de-activate
         if (activeCount > ROW_COUNT / 2) {
             OnTargetSummaryActivated(EventArgs.Empty);
+        }
+        else {
+            OnTargetSummaryDeactivated(EventArgs.Empty);
         }
     }
 

@@ -21,4 +21,10 @@ public class TargetSummaryController : MonoBehaviour {
     {
         spriteRenderer.color = YELLOW;
     }
+
+    public void onDeactivated()
+    {
+        // do nothing here for now.  when we have a second player we can replace activate / de-activate with a method
+        // for setting the colour based on who is winning.
+    }
 }

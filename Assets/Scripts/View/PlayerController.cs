@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     public event PlayerMoveRequestedEventHandler playerMoveRequested;
     public event FirePressedEventHandler firePressed;
 
-    public float period = 0.1f;
+    private float period = 0.15f;
 
     private float nextActionTime = 0.0f;
 

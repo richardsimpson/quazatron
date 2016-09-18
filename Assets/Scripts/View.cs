@@ -25,24 +25,30 @@ public class View : MonoBehaviour
 
     private List<TargetController> targets = new List<TargetController>();
     TargetSummaryController targetSummary;
-    private AbstractBoardObjectController[,] boardViews = new AbstractBoardObjectController[3, ROW_COUNT];
+    private AbstractBoardObjectController[,] player1BoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
+    private AbstractBoardObjectController[,] player2BoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
 
     private PlayerController player;
     private List<PlayerController> playerLives = new List<PlayerController>();
     private Dictionary<int, PlayerController> oldPlayers = new Dictionary<int, PlayerController>();
 
-    private float colZeroXPos;
+    private float player1ColZeroXPos;
+    private float player2ColZeroXPos;
     private float colWidth;
 
-    public void init(BoardObject[,] board) {
-        this.colZeroXPos = targetPrefab.transform.position.x - (targetPrefab.transform.localScale.x/2)
+    public void init(BoardObject[,] player1BoardModel, BoardObject[,] player2BoardModel) {
+        this.player1ColZeroXPos = targetPrefab.transform.position.x - (targetPrefab.transform.localScale.x/2)
             - (wirePrefab.transform.localScale.x/2) - (wirePrefab.transform.localScale.x * 2);
+
+        this.player2ColZeroXPos = targetPrefab.transform.position.x + (targetPrefab.transform.localScale.x/2)
+            + (wirePrefab.transform.localScale.x/2) + (wirePrefab.transform.localScale.x * 2);
 
         this.colWidth = wirePrefab.transform.localScale.x;
 
         constructTargetViews();
         constructTargetSummary();
-        constructInputViews(board);
+        constructInputViews(player1BoardModel, player1BoardViews, true);
+        constructInputViews(player2BoardModel, player2BoardViews, false);
     }
 
     private void constructTargetSummary() {
@@ -64,44 +70,64 @@ public class View : MonoBehaviour
         }
     }
 
+    private float computeXPos(int column, bool isPlayerOne) {
+        if (isPlayerOne) {
+            return this.player1ColZeroXPos+(this.colWidth*column);
+        }
+
+        return this.player2ColZeroXPos-(this.colWidth*column);
+    }
+
+    private Vector3 computeRotation(bool isPlayerOne) {
+        if (isPlayerOne) {
+            return new Vector3(0, 0, 0);
+        }
+
+        return new Vector3(0, 0, 180);
+    }
+
     // TODO: See if these methods can be collapsed into a single one
-    private WireController constructWire(int column, int row) {
+    private WireController constructWire(int column, int row, bool isPlayerOne) {
         float yPos = INITIAL_Y - (row * Y_INCREMENT);
 
         WireController result = Instantiate(wirePrefab);
 
-        result.transform.position = new Vector3(this.colZeroXPos+(this.colWidth*column), yPos, 0);
+        result.transform.position = new Vector3(computeXPos(column, isPlayerOne), yPos, 0);
+        result.transform.Rotate(computeRotation(isPlayerOne));
         return result;
     }
 
-    private InitiatorController constructInitiator(int column, int row) {
+    private InitiatorController constructInitiator(int column, int row, bool isPlayerOne) {
         float yPos = INITIAL_Y - (row * Y_INCREMENT);
 
         InitiatorController result = Instantiate(initiatorPrefab);
 
-        result.transform.position = new Vector3(this.colZeroXPos+(this.colWidth*column), yPos, 0);
+        result.transform.position = new Vector3(computeXPos(column, isPlayerOne), yPos, 0);
+        result.transform.Rotate(computeRotation(isPlayerOne));
         return result;
     }
 
-    private SwapperController constructSwapper(int column, int row) {
+    private SwapperController constructSwapper(int column, int row, bool isPlayerOne) {
         float yPos = INITIAL_Y - (row * Y_INCREMENT);
 
         SwapperController result = Instantiate(swapperPrefab);
 
-        result.transform.position = new Vector3(this.colZeroXPos+(this.colWidth*column), yPos, 0);
+        result.transform.position = new Vector3(computeXPos(column, isPlayerOne), yPos, 0);
+        result.transform.Rotate(computeRotation(isPlayerOne));
         return result;
     }
 
-    private TerminatorController constructTerminator(int column, int row) {
+    private TerminatorController constructTerminator(int column, int row, bool isPlayerOne) {
         float yPos = INITIAL_Y - (row * Y_INCREMENT);
 
         TerminatorController result = Instantiate(terminatorPrefab);
 
-        result.transform.position = new Vector3(this.colZeroXPos+(this.colWidth*column), yPos, 0);
+        result.transform.position = new Vector3(computeXPos(column, isPlayerOne), yPos, 0);
+        result.transform.Rotate(computeRotation(isPlayerOne));
         return result;
     }
 
-    private ConnectorController constructConnector(Connector modelInput, int column, int row) {
+    private ConnectorController constructConnector(Connector modelInput, int column, int row, bool isPlayerOne) {
         float yPos = INITIAL_Y - (row * Y_INCREMENT);
 
         ConnectorController result;
@@ -115,33 +141,36 @@ public class View : MonoBehaviour
             throw new Exception("Invalid number of outputs for Connector");
         }
 
-        result.transform.position = new Vector3(this.colZeroXPos+(this.colWidth*column), yPos, 0);
+        result.transform.position = new Vector3(computeXPos(column, isPlayerOne), yPos, 0);
+        result.transform.Rotate(computeRotation(isPlayerOne));
         return result;
     }
 
-    private void constructInputViews(BoardObject[,] board) {
-        for (int i = 0 ; i < board.GetLength(0) ; i++) {
-            for (int j = 0 ; j < board.GetLength(1) ; j++) {
-                if (board[i,j] != null) {
-                    constructBoardObjectView(board[i,j], i, j);
+    private void constructInputViews(BoardObject[,] boardModel, AbstractBoardObjectController[,] boardViews, bool isPlayerOne) {
+        for (int i = 0 ; i < boardModel.GetLength(0) ; i++) {
+            for (int j = 0 ; j < boardModel.GetLength(1) ; j++) {
+                if (boardModel[i,j] != null) {
+                    constructBoardObjectView(boardViews, boardModel[i,j], i, j, isPlayerOne);
                 }
             }
         }
     }
 
-    private void constructBoardObjectView(BoardObject modelInput, int column, int row) {
+    private void constructBoardObjectView(AbstractBoardObjectController[,] boardViews, BoardObject modelInput, int column, int row, 
+        bool isPlayerOne) {
+
         if (modelInput is Wire) {
-            this.boardViews[column, row] = constructWire(column, row);
+            boardViews[column, row] = constructWire(column, row, isPlayerOne);
             return;
         }
 
         if (modelInput is Connector) {
             List<BoardObject> modelOutputs = modelInput.getOutputs();
             if (modelOutputs.Count == 1) {
-                this.boardViews[column, row] = constructConnector((Connector)modelInput, column, row);
+                boardViews[column, row] = constructConnector((Connector)modelInput, column, row, isPlayerOne);
             }
             else if (modelOutputs.Count == 2) {
-                this.boardViews[column, row] = constructConnector((Connector)modelInput, column, row);
+                boardViews[column, row] = constructConnector((Connector)modelInput, column, row, isPlayerOne);
             }
             else {
                 throw new Exception("Unexpected number of outputs in Connector");
@@ -151,17 +180,17 @@ public class View : MonoBehaviour
         }
 
         if (modelInput is Initiator) {
-            this.boardViews[column, row] = constructInitiator(column, row);
+            boardViews[column, row] = constructInitiator(column, row, isPlayerOne);
             return;
         }
 
         if (modelInput is Swapper) {
-            this.boardViews[column, row] = constructSwapper(column, row);
+            boardViews[column, row] = constructSwapper(column, row, isPlayerOne);
             return;
         }
 
         if (modelInput is Terminator) {
-            this.boardViews[column, row] = constructTerminator(column, row);
+            boardViews[column, row] = constructTerminator(column, row, isPlayerOne);
             return;
         }
 
@@ -173,9 +202,14 @@ public class View : MonoBehaviour
         return this.targets;
     }
 
-    public AbstractBoardObjectController[,] getBoard()
+    public AbstractBoardObjectController[,] getPlayer1Board()
     {
-        return this.boardViews;
+        return this.player1BoardViews;
+    }
+
+    public AbstractBoardObjectController[,] getPlayer2Board()
+    {
+        return this.player2BoardViews;
     }
 
     public PlayerController createPlayer()

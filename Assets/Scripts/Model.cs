@@ -38,8 +38,12 @@ public class Model : MonoBehaviour
         return this.gameBoard.getTargets();
     }
 
-    public BoardObject[,] getBoard() {
-        return this.gameBoard.getBoard();
+    public BoardObject[,] getPlayer1Board() {
+        return this.gameBoard.getPlayer1Board();
+    }
+
+    public BoardObject[,] getPlayer2Board() {
+        return this.gameBoard.getPlayer2Board();
     }
 
     public GameBoard getGameBoard() {

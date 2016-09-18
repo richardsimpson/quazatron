@@ -30,7 +30,8 @@ public class GameBoard
     private const int ROW_COUNT = 12;
 
     private List<Target> targets = new List<Target>();
-    private AbstractBoardObject[,] board = new AbstractBoardObject[3,ROW_COUNT];
+    private AbstractBoardObject[,] player1Board = new AbstractBoardObject[3,ROW_COUNT];
+    private AbstractBoardObject[,] player2Board = new AbstractBoardObject[3,ROW_COUNT];
 
 	public GameBoard()
 	{
@@ -41,6 +42,11 @@ public class GameBoard
             this.targets.Add(target);
         }
 
+        createBoard(this.player1Board);
+        createBoard(this.player2Board);
+	}
+
+    private void createBoard(AbstractBoardObject[,] board) {
         // setup this board:
         //        1      2      3
         //
@@ -58,65 +64,71 @@ public class GameBoard
         //    12  ---------------------
 
         // column 3 first:
-        this.board[2, 0] = new Wire(this.targets[0]);
-        this.board[2, 1] = new Wire(this.targets[1]);
-        this.board[2, 2] = null;
-        this.board[2, 3] = new Wire(this.targets[3]);
-        this.board[2, 4] = new Wire(this.targets[4]);
-        this.board[2, 5] = new Swapper(this.targets[5]);
-        this.board[2, 6] = null;
-        this.board[2, 7] = null;
-        this.board[2, 8] = null;
-        this.board[2, 9] = new Connector(this.targets[9]);
-        this.board[2, 10] = null;
-        this.board[2, 11] = new Wire(this.targets[11]);
+        board[2, 0] = new Wire(this.targets[0]);
+        board[2, 1] = new Wire(this.targets[1]);
+        board[2, 2] = null;
+        board[2, 3] = new Wire(this.targets[3]);
+        board[2, 4] = new Wire(this.targets[4]);
+        board[2, 5] = new Swapper(this.targets[5]);
+        board[2, 6] = null;
+        board[2, 7] = null;
+        board[2, 8] = null;
+        board[2, 9] = new Connector(this.targets[9]);
+        board[2, 10] = null;
+        board[2, 11] = new Wire(this.targets[11]);
 
-        this.board[1, 0] = new Wire(this.board[2, 0]);
-        this.board[1, 1] = null;
+        board[1, 0] = new Wire(board[2, 0]);
+        board[1, 1] = null;
         List<AbstractBoardObject> outputs = new List<AbstractBoardObject>();
-        outputs.Add(this.board[2, 1]);
-        outputs.Add(this.board[2, 3]);
-        this.board[1, 2] = new Connector(outputs);
-        this.board[1, 3] = null;
-        this.board[1, 4] = new Initiator(this.board[2, 4]);
-        this.board[1, 5] = new Wire(this.board[2, 5]);
-        this.board[1, 6] = new Terminator();
-        this.board[1, 7] = null;
-        this.board[1, 8] = new Connector(this.board[2, 9]);
-        this.board[1, 9] = null;
-        this.board[1, 10] = new Wire(this.board[2, 9]);
-        this.board[1, 11] = new Wire(this.board[2, 11]);
+        outputs.Add(board[2, 1]);
+        outputs.Add(board[2, 3]);
+        board[1, 2] = new Connector(outputs);
+        board[1, 3] = null;
+        board[1, 4] = new Initiator(board[2, 4]);
+        board[1, 5] = new Wire(board[2, 5]);
+        board[1, 6] = new Terminator();
+        board[1, 7] = null;
+        board[1, 8] = new Connector(board[2, 9]);
+        board[1, 9] = null;
+        board[1, 10] = new Wire(board[2, 9]);
+        board[1, 11] = new Wire(board[2, 11]);
 
-        this.board[0, 0] = new Wire(this.board[1, 0]);
-        this.board[0, 1] = new Terminator();
-        this.board[0, 2] = new Wire(this.board[1, 2]);
-        this.board[0, 3] = new Terminator();
-        this.board[0, 4] = new Wire(this.board[1, 4]);
-        this.board[0, 5] = new Wire(this.board[1, 5]);
-        this.board[0, 6] = new Wire(this.board[1, 6]);
-        this.board[0, 7] = new Wire(this.board[1, 8]);
-        this.board[0, 8] = new Terminator();
-        this.board[0, 9] = new Wire(this.board[1, 8]);
-        this.board[0, 10] = new Wire(this.board[1, 10]);
-        this.board[0, 11] = new Wire(this.board[1, 11]);
-	}
+        board[0, 0] = new Wire(board[1, 0]);
+        board[0, 1] = new Terminator();
+        board[0, 2] = new Wire(board[1, 2]);
+        board[0, 3] = new Terminator();
+        board[0, 4] = new Wire(board[1, 4]);
+        board[0, 5] = new Wire(board[1, 5]);
+        board[0, 6] = new Wire(board[1, 6]);
+        board[0, 7] = new Wire(board[1, 8]);
+        board[0, 8] = new Terminator();
+        board[0, 9] = new Wire(board[1, 8]);
+        board[0, 10] = new Wire(board[1, 10]);
+        board[0, 11] = new Wire(board[1, 11]);
+    }
 
     public List<Target> getTargets() {
         return this.targets;
     }
 
-    public BoardObject[,] getBoard() {
-        return this.board;
+    public BoardObject[,] getPlayer1Board() {
+        return this.player1Board;
+    }
+
+    public BoardObject[,] getPlayer2Board() {
+        return this.player2Board;
     }
 
     public void onFirePressed(int playerPosition)
     {
-        this.board[0, playerPosition].inputActivated(null);
+        //TODO: Check if this needs to work for both players
+        this.player1Board[0, playerPosition].inputActivated(null);
     }
 
     public void onPlayerRemoved(int playerPosition)
     {
-        this.board[0, playerPosition].inputDeactivated(null);
+        //TODO: Check if this needs to work for both players
+        this.player1Board[0, playerPosition].inputDeactivated(null);
     }
 
     protected void OnTargetSummaryActivated(EventArgs eventArgs) {
@@ -139,7 +151,7 @@ public class GameBoard
             }
         }
 
-        // when we have two players, we should indicate who controls the target summary, so the view can 
+        // TODO: when we have two players, we should indicate who controls the target summary, so the view can 
         // show it as Yellow, Black or Blue.  For now, just activate / de-activate
         if (activeCount > ROW_COUNT / 2) {
             OnTargetSummaryActivated(EventArgs.Empty);

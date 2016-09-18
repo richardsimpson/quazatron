@@ -26,8 +26,10 @@ public class Controller : MonoBehaviour
         this.view = view;
 
         // add listeners to all model events.
-        BoardObject[,] board = this.model.getBoard();
-        addBoardObjectActivatedEventListeners(board);
+        BoardObject[,] player1Board = this.model.getPlayer1Board();
+        addBoardObjectActivatedEventListeners(player1Board);
+        BoardObject[,] player2Board = this.model.getPlayer2Board();
+        addBoardObjectActivatedEventListeners(player2Board);
 
         List<Target> targets = this.model.getTargets();
         for (int i = 0 ; i < targets.Count ; i++) {
@@ -41,12 +43,14 @@ public class Controller : MonoBehaviour
         this.model.getGameBoard().targetSummaryDeactivated += onTargetSummaryDeactivated;
 
         // create the view - one component for each element in the model.
-        this.view.init(board);
+        this.view.init(player1Board, player2Board);
 
         // Create the map/dictionary of model -> view elements, so can instruct changes in the view.
-        AbstractBoardObjectController[,] boardViews = this.view.getBoard();
+        AbstractBoardObjectController[,] player1BoardViews = this.view.getPlayer1Board();
+        AbstractBoardObjectController[,] player2BoardViews = this.view.getPlayer1Board();
         List<TargetController> targetViews = this.view.getTargets();
-        addToDictionary(board, boardViews);
+        addToDictionary(player1Board, player1BoardViews);
+        addToDictionary(player2Board, player2BoardViews);
         addToDictionary(targets, targetViews);
 
         // setup the player (view)

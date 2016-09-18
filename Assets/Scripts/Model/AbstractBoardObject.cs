@@ -37,7 +37,7 @@ public abstract class AbstractBoardObject : BoardObject
             boardObjectDeactivated(this, eventArgs);
     }
 
-    public void inputActivated(BoardObject input) {
+    public virtual void inputActivated(BoardObject input) {
         // Only execute OnBoardObjectActivated and the outputs' inputActivated if ALL inputs are activated.
 
         bool allInputsActivated = true;
@@ -70,5 +70,8 @@ public abstract class AbstractBoardObject : BoardObject
         return this.activated;
     }
 
+    protected void setActivated(bool activated) {
+        this.activated = activated;
+    }
 }
 

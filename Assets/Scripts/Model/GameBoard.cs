@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 // Game Board Description
 //
@@ -17,8 +18,13 @@ using System.Collections.Generic;
 // Note that if there is a terminator in '1', then the player cannot fire into that row.
 // Note also that a player cannot fire into a row that alrady has an active zap.
 
+// NOTE: This will ultimately indicate which player is winning, via an enum (just like wires), but for now the event is empty.
+public delegate void TargetSummaryActivatedEventHandler(GameBoard sender, EventArgs e);
+
 public class GameBoard
 {
+    public event TargetSummaryActivatedEventHandler targetSummaryActivated;
+
     private const int ROW_COUNT = 12;
 
     private List<Target> targets = new List<Target>();
@@ -27,7 +33,9 @@ public class GameBoard
 	public GameBoard()
 	{
         for (int i = 0 ; i < ROW_COUNT ; i++) {
-            this.targets.Add(new Target());
+            Target target = new Target();
+            target.boardObjectActivated += onTargetActivated;
+            this.targets.Add(target);
         }
 
         // setup this board:
@@ -102,5 +110,25 @@ public class GameBoard
     {
         this.board[0, playerPosition].inputActivated(null);
     }
+
+    protected void OnTargetSummaryActivated(EventArgs eventArgs) {
+        Debug.Log("OnTargetSummaryActivated.");
+        if (targetSummaryActivated != null)
+            targetSummaryActivated(this, eventArgs);
+    }
+
+    private void onTargetActivated(BoardObject sender, EventArgs e) {
+        int activeCount = 0;
+        for (int i = 0 ; i < this.targets.Count ; i++) {
+            if (this.targets[i].isActivated()) {
+                activeCount = activeCount + 1;
+            }
+        }
+
+        if (activeCount > ROW_COUNT / 2) {
+            OnTargetSummaryActivated(EventArgs.Empty);
+        }
+    }
+
 }
 

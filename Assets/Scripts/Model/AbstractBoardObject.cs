@@ -50,5 +50,9 @@ public abstract class AbstractBoardObject : BoardObject
         }
     }
 
+    public bool isActivated() {
+        return this.activated;
+    }
+
 }
 

@@ -34,6 +34,7 @@ public class Controller : MonoBehaviour
         }
 
         this.model.zapFired += onZapFired;
+        this.model.getGameBoard().targetSummaryActivated += onTargetSummaryActivated;
 
         // create the view - one component for each element in the model.
         this.view.init(board);
@@ -79,6 +80,11 @@ public class Controller : MonoBehaviour
     private void onZapFired(Model sender, EventArgs e)
     {
         this.view.onZapFired();
+    }
+
+    void onTargetSummaryActivated(GameBoard sender, EventArgs e)
+    {
+        this.view.onTargetSummaryActivated();
     }
 
     private void onPlayerMoveRequested(object sender, PlayerMoveRequestedEventArgs e) 

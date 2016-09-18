@@ -24,6 +24,7 @@ public class View : MonoBehaviour
     public PlayerController playerPrefab;
 
     private List<TargetController> targets = new List<TargetController>();
+    TargetSummaryController targetSummary;
     private AbstractBoardObjectController[,] boardViews = new AbstractBoardObjectController[3, ROW_COUNT];
 
     private PlayerController player;
@@ -45,9 +46,9 @@ public class View : MonoBehaviour
     }
 
     private void constructTargetSummary() {
-        TargetSummaryController targetSummary = Instantiate(targetSummaryPrefab);
-        float posY = INITIAL_Y + this.targets[0].transform.localScale.y/2 + targetSummary.transform.localScale.y/2 + 0.10f; //0.10f = Y_INCREMENT - height of targetPrefab
-        targetSummary.transform.position = new Vector3(0, posY, 0);
+        this.targetSummary = Instantiate(targetSummaryPrefab);
+        float posY = INITIAL_Y + this.targets[0].transform.localScale.y/2 + this.targetSummary.transform.localScale.y/2 + 0.10f; //0.10f = Y_INCREMENT - height of targetPrefab
+        this.targetSummary.transform.position = new Vector3(0, posY, 0);
     }
 
     private void constructTargetViews() {
@@ -135,8 +136,6 @@ public class View : MonoBehaviour
         }
 
         if (modelInput is Connector) {
-            ConnectorController boardObject;
-
             List<BoardObject> modelOutputs = modelInput.getOutputs();
             if (modelOutputs.Count == 1) {
                 this.boardViews[column, row] = constructConnector((Connector)modelInput, column, row);
@@ -231,5 +230,10 @@ public class View : MonoBehaviour
             // then enable it's script.
             this.player.enabled = true;
         }
+    }
+
+    public void onTargetSummaryActivated()
+    {
+        this.targetSummary.onActivated();
     }
 }

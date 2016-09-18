@@ -29,6 +29,10 @@ public class Model : MonoBehaviour
         return this.gameBoard.getBoard();
     }
 
+    public GameBoard getGameBoard() {
+        return this.gameBoard;
+    }
+
     public Player getCurrentPlayer() {
         return this.currentPlayer;
     }

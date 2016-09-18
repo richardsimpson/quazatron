@@ -70,24 +70,31 @@ public class Model : MonoBehaviour
     {
         int playerPosition = this.currentPlayer.getPlayerPosition();
 
-        // only allow a zap to be fired if there isn't one in the current player position already
-        if (!this.oldPlayers.ContainsKey(playerPosition)) {
-            // Construct a new OldPlayer object
-            OldPlayer oldPlayer = new OldPlayer(playerPosition);
-
-            // Add OldPlayer to a new 'old players' dictionary, and start a co-routine to remove them in the future
-            this.oldPlayers.Add(playerPosition, oldPlayer);
-            StartCoroutine(removePlayer(oldPlayer));
-
-            // activate the current 'player', to light up the wire, etc
-            this.gameBoard.onFirePressed(this.currentPlayer.getPlayerPosition());
-
-            // Reset the 'currentPlayer' object.
-            this.currentPlayer.reset();
-
-            // Fire a 'zapFired' event.  In the view this populates 'old player', and moves the zap onto the grid.
-            onZapFired(EventArgs.Empty);
+        // don't allow a zap to be fired if there is one in the current player position already
+        if (this.oldPlayers.ContainsKey(playerPosition)) {
+            return;
         }
+
+        // don't allow a zap to be fired if there is a terminator in the first column of the current row.
+        if (this.getPlayer1Board()[0, playerPosition] is Terminator) {
+            return;
+        }
+
+        // Construct a new OldPlayer object
+        OldPlayer oldPlayer = new OldPlayer(playerPosition);
+
+        // Add OldPlayer to a new 'old players' dictionary, and start a co-routine to remove them in the future
+        this.oldPlayers.Add(playerPosition, oldPlayer);
+        StartCoroutine(removePlayer(oldPlayer));
+
+        // activate the current 'player', to light up the wire, etc
+        this.gameBoard.onFirePressed(this.currentPlayer.getPlayerPosition());
+
+        // Reset the 'currentPlayer' object.
+        this.currentPlayer.reset();
+
+        // Fire a 'zapFired' event.  In the view this populates 'old player', and moves the zap onto the grid.
+        onZapFired(EventArgs.Empty);
     }
 
     private IEnumerator<WaitForSeconds> removePlayer(OldPlayer oldPlayer) {

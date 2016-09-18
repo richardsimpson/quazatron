@@ -29,11 +29,11 @@ public class Player
         }
 
         if (this.playerPosition < MIN_PLAYER_POS) {
-            this.playerPosition = MIN_PLAYER_POS;
+            this.playerPosition = MAX_PLAYER_POS;
         }
 
         if (this.playerPosition > MAX_PLAYER_POS) {
-            this.playerPosition = MAX_PLAYER_POS;
+            this.playerPosition = MIN_PLAYER_POS;
         }
 
         if (oldPlayerPosition != this.playerPosition) {

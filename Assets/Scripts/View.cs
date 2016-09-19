@@ -233,7 +233,9 @@ public class View : MonoBehaviour
         return this.playerLives;
     }
 
-    public void onPlayerMoved(int position) {
+    public void onPlayerMoved(PlayerNumber playerNumber, int position) {
+        // TODO: Make this work for both players
+
         this.player.onPlayerMoved(position);
     }
 
@@ -245,8 +247,10 @@ public class View : MonoBehaviour
         boardObjectController.onDeactivated();
     }
 
-    public void onZapFired()
+    public void onZapFired(PlayerNumber playerNumber)
     {
+        // TODO: Make this work for both players
+
         // move the player one space to the right, 
         Transform t = this.player.transform;
         t.position += new Vector3(t.localScale.x, 0, 0);
@@ -268,7 +272,9 @@ public class View : MonoBehaviour
         }
     }
 
-    public void onZapExpired(int playerPosition) {
+    public void onZapExpired(PlayerNumber playerNumber, int playerPosition) {
+        // TODO: Make this work for both players
+
         // Find the entry in oldPlayers that corresponds to the specified playerPosition, then set it inactive.
         this.oldPlayers[playerPosition].setActive(false);
         this.oldPlayers.Remove(playerPosition);

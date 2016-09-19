@@ -119,16 +119,24 @@ public class GameBoard
         return this.player2Board;
     }
 
-    public void onFirePressed(int playerPosition)
-    {
-        //TODO: Check if this needs to work for both players
-        this.player1Board[0, playerPosition].inputActivated(null);
+    private BoardObject[,] getBoardForPlayerNumber(PlayerNumber playerNumber) {
+        if (PlayerNumber.PLAYER1 == playerNumber) {
+            return this.player1Board;
+        }
+
+        return player2Board;
     }
 
-    public void onPlayerRemoved(int playerPosition)
+    public void onFirePressed(PlayerNumber playerNumber, int playerPosition)
     {
-        //TODO: Check if this needs to work for both players
-        this.player1Board[0, playerPosition].inputDeactivated(null);
+        BoardObject[,] board = getBoardForPlayerNumber(playerNumber);
+        board[0, playerPosition].inputActivated(null);
+    }
+
+    public void onPlayerRemoved(PlayerNumber playerNumber, int playerPosition)
+    {
+        BoardObject[,] board = getBoardForPlayerNumber(playerNumber);
+        board[0, playerPosition].inputDeactivated(null);
     }
 
     protected void OnTargetSummaryActivated(EventArgs eventArgs) {

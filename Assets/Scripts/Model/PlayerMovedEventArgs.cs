@@ -3,10 +3,12 @@
 public class PlayerMovedEventArgs : EventArgs
 {
     public int position;
+    public PlayerNumber playerNumber;
 
-    public PlayerMovedEventArgs(int position)
+    public PlayerMovedEventArgs(PlayerNumber playerNumber, int position)
     {
         this.position = position;
+        this.playerNumber = playerNumber;
     }    
 
 }

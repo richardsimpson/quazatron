@@ -10,7 +10,12 @@ public class Player
     private const int MIN_PLAYER_POS = 0;
     private const int MAX_PLAYER_POS = 11;
 
+    private readonly PlayerNumber playerNumber;
     private int playerPosition = 0;
+
+    public Player(PlayerNumber playerNumber) {
+        this.playerNumber = playerNumber;
+    }
 
     public void reset()
     {
@@ -37,7 +42,7 @@ public class Player
         }
 
         if (oldPlayerPosition != this.playerPosition) {
-            onPlayerMoved(new PlayerMovedEventArgs(this.playerPosition));
+            onPlayerMoved(new PlayerMovedEventArgs(this.playerNumber, this.playerPosition));
         }
     }
 

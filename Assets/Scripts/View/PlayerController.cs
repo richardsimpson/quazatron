@@ -2,8 +2,19 @@
 using UnityEngine;
 
 public delegate void PlayerMoveRequestedEventHandler(object sender, PlayerMoveRequestedEventArgs e);
-public delegate void FirePressedEventHandler(object sender, EventArgs e);
+public delegate void FirePressedEventHandler(object sender, FirePressedEventArgs e);
 
+public class FirePressedEventArgs : EventArgs
+{
+    public PlayerNumber playerNumber;
+
+    public FirePressedEventArgs(PlayerNumber playerNumber)
+    {
+        this.playerNumber = playerNumber;
+    }    
+
+}
+    
 public class PlayerController : MonoBehaviour
 {
     public event PlayerMoveRequestedEventHandler playerMoveRequested;
@@ -41,7 +52,7 @@ public class PlayerController : MonoBehaviour
             playerMoveRequested(this, eventArgs);
     }
 
-    private void OnFirePressed(EventArgs eventArgs) {
+    private void OnFirePressed(FirePressedEventArgs eventArgs) {
         Debug.Log("OnFirePressed.");
         if (firePressed != null)
             firePressed(this, eventArgs);
@@ -52,7 +63,7 @@ public class PlayerController : MonoBehaviour
         if (!fireKeyDown && Input.GetKey(KeyCode.Space)) {
             // issue a 'fire' event
             fireKeyDown = true;
-            OnFirePressed(EventArgs.Empty);
+            OnFirePressed(new FirePressedEventArgs(PlayerNumber.PLAYER1));
         }
 
         if (!Input.GetKey(KeyCode.Space)) {
@@ -63,10 +74,10 @@ public class PlayerController : MonoBehaviour
             nextActionTime = Time.time + period;
 
             if (Input.GetKey(KeyCode.UpArrow)) {
-                OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(Direction.UP));
+                OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(PlayerNumber.PLAYER1, Direction.UP));
             }
             else if (Input.GetKey(KeyCode.DownArrow)) {
-                OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(Direction.DOWN));
+                OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(PlayerNumber.PLAYER1, Direction.DOWN));
             }
         }
     }

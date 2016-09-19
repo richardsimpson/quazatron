@@ -66,7 +66,8 @@ public class Controller : MonoBehaviour
         }
 
         // listen for the model changing the player position
-        this.model.getCurrentPlayer().playerMoved += onPlayerMoved;
+        this.model.getPlayer1().playerMoved += onPlayerMoved;
+        this.model.getPlayer2().playerMoved += onPlayerMoved;
     }
 
     private void addToDictionary(BoardObject[,] board, AbstractBoardObjectController[,] boardViews) {
@@ -85,14 +86,14 @@ public class Controller : MonoBehaviour
         }
     }
 
-    private void onZapFired(Model sender, EventArgs e)
+    private void onZapFired(Model sender, ZapFiredEventArgs e)
     {
-        this.view.onZapFired();
+        this.view.onZapFired(e.playerNumber);
     }
 
     private void onZapExpired(Model sender, ZapExpiredEventArgs e)
     {
-        this.view.onZapExpired(e.playerPosition);
+        this.view.onZapExpired(e.playerNumber, e.playerPosition);
     }
 
     void onTargetSummaryActivated(GameBoard sender, EventArgs e)
@@ -107,17 +108,17 @@ public class Controller : MonoBehaviour
 
     private void onPlayerMoveRequested(object sender, PlayerMoveRequestedEventArgs e) 
     {
-        this.model.onPlayerMoveRequested(e.direction);
+        this.model.onPlayerMoveRequested(e.playerNumber, e.direction);
     }
 
-    void onFirePressed(object sender, EventArgs e)
+    private void onFirePressed(object sender, FirePressedEventArgs e)
     {
-        this.model.onFirePressed();
+        this.model.onFirePressed(e.playerNumber);
     }
 
     private void onPlayerMoved(object sender, PlayerMovedEventArgs e) 
     {
-        this.view.onPlayerMoved(e.position);
+        this.view.onPlayerMoved(e.playerNumber, e.position);
     }
 
     private void onBoardObjectActivated(BoardObject sender, EventArgs e) {

@@ -2,16 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public delegate void ZapFiredEventHandler(Model sender, EventArgs e);
+public delegate void ZapFiredEventHandler(Model sender, ZapFiredEventArgs e);
 public delegate void ZapExpiredEventHandler(Model sender, ZapExpiredEventArgs e);
 
 public class ZapExpiredEventArgs : EventArgs
 {
+    public PlayerNumber playerNumber;
     public int playerPosition;
 
-    public ZapExpiredEventArgs(int playerPosition)
+    public ZapExpiredEventArgs(PlayerNumber playerNumber, int playerPosition)
     {
+        this.playerNumber = playerNumber;
         this.playerPosition = playerPosition;
+    }    
+
+}
+
+public class ZapFiredEventArgs : EventArgs
+{
+    public PlayerNumber playerNumber;
+
+    public ZapFiredEventArgs(PlayerNumber playerNumber)
+    {
+        this.playerNumber = playerNumber;
     }    
 
 }
@@ -26,12 +39,16 @@ public class Model : MonoBehaviour
 
     // Data
     private GameBoard gameBoard;
-    private Player currentPlayer;
-    private Dictionary<int, OldPlayer> oldPlayers = new Dictionary<int, OldPlayer>();
+    private Player player1;
+    private Player player2;
+    private Dictionary<Player, Dictionary<int, OldPlayer>> oldPlayers = new Dictionary<Player, Dictionary<int, OldPlayer>>();
 
     public void init() {
         this.gameBoard = new GameBoard();
-        this.currentPlayer = new Player();
+        this.player1 = new Player(PlayerNumber.PLAYER1);
+        this.player2 = new Player(PlayerNumber.PLAYER2);
+        oldPlayers.Add(this.player1, new Dictionary<int, OldPlayer>());
+        oldPlayers.Add(this.player2, new Dictionary<int, OldPlayer>());
     }
 
     public List<Target> getTargets() {
@@ -50,11 +67,15 @@ public class Model : MonoBehaviour
         return this.gameBoard;
     }
 
-    public Player getCurrentPlayer() {
-        return this.currentPlayer;
+    public Player getPlayer1() {
+        return this.player1;
     }
 
-    private void onZapFired(EventArgs eventArgs) {
+    public Player getPlayer2() {
+        return this.player2;
+    }
+
+    private void onZapFired(ZapFiredEventArgs eventArgs) {
         Debug.Log("onZapFired.");
         if (zapFired != null)
             zapFired(this, eventArgs);
@@ -66,17 +87,37 @@ public class Model : MonoBehaviour
             zapExpired(this, eventArgs);
     }
 
-    public void onFirePressed()
+    private Player getPlayerForPlayerNumber(PlayerNumber playerNumber) {
+        if (PlayerNumber.PLAYER1 == playerNumber) {
+            return this.player1;
+        }
+
+        return this.player2;
+    }
+
+    private BoardObject[,] getBoardForPlayerNumber(PlayerNumber playerNumber) {
+        if (PlayerNumber.PLAYER1 == playerNumber) {
+            return getPlayer1Board();
+        }
+
+        return getPlayer2Board();
+    }
+
+    public void onFirePressed(PlayerNumber playerNumber)
     {
-        int playerPosition = this.currentPlayer.getPlayerPosition();
+        Player player = getPlayerForPlayerNumber(playerNumber);
+
+        int playerPosition = player.getPlayerPosition();
+        Dictionary<int, OldPlayer> oldPlayerList = this.oldPlayers[player];
 
         // don't allow a zap to be fired if there is one in the current player position already
-        if (this.oldPlayers.ContainsKey(playerPosition)) {
+        if (oldPlayerList.ContainsKey(playerPosition)) {
             return;
         }
 
         // don't allow a zap to be fired if there is a terminator in the first column of the current row.
-        if (this.getPlayer1Board()[0, playerPosition] is Terminator) {
+        BoardObject[,] board = getBoardForPlayerNumber(playerNumber);
+        if (board[0, playerPosition] is Terminator) {
             return;
         }
 
@@ -84,34 +125,37 @@ public class Model : MonoBehaviour
         OldPlayer oldPlayer = new OldPlayer(playerPosition);
 
         // Add OldPlayer to a new 'old players' dictionary, and start a co-routine to remove them in the future
-        this.oldPlayers.Add(playerPosition, oldPlayer);
-        StartCoroutine(removePlayer(oldPlayer));
+        oldPlayerList.Add(playerPosition, oldPlayer);
+        StartCoroutine(removePlayer(playerNumber, oldPlayer));
 
         // activate the current 'player', to light up the wire, etc
-        this.gameBoard.onFirePressed(this.currentPlayer.getPlayerPosition());
+        this.gameBoard.onFirePressed(playerNumber, player.getPlayerPosition());
 
         // Reset the 'currentPlayer' object.
-        this.currentPlayer.reset();
+        player.reset();
 
         // Fire a 'zapFired' event.  In the view this populates 'old player', and moves the zap onto the grid.
-        onZapFired(EventArgs.Empty);
+        onZapFired(new ZapFiredEventArgs(playerNumber));
     }
 
-    private IEnumerator<WaitForSeconds> removePlayer(OldPlayer oldPlayer) {
+    private IEnumerator<WaitForSeconds> removePlayer(PlayerNumber playerNumber, OldPlayer oldPlayer) {
 
         yield return new WaitForSeconds(5);
 
         Debug.Log("player removed");
 
-        this.oldPlayers.Remove(oldPlayer.getPlayerPosition());
+        Player player = getPlayerForPlayerNumber(playerNumber);
 
-        this.gameBoard.onPlayerRemoved(oldPlayer.getPlayerPosition());
-        onZapExpired(new ZapExpiredEventArgs(oldPlayer.getPlayerPosition()));
+        this.oldPlayers[player].Remove(oldPlayer.getPlayerPosition());
+
+        this.gameBoard.onPlayerRemoved(playerNumber, oldPlayer.getPlayerPosition());
+        onZapExpired(new ZapExpiredEventArgs(playerNumber, oldPlayer.getPlayerPosition()));
     }
 
-    public void onPlayerMoveRequested(Direction direction)
+    public void onPlayerMoveRequested(PlayerNumber playerNumber, Direction direction)
     {
-        this.currentPlayer.onPlayerMoveRequested(direction);
+        Player player = getPlayerForPlayerNumber(playerNumber);
+        player.onPlayerMoveRequested(direction);
     }
 
     public int getNumberOfLives() {

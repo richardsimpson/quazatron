@@ -41,14 +41,14 @@ public class Model : MonoBehaviour
     private GameBoard gameBoard;
     private Player player1;
     private Player player2;
-    private Dictionary<Player, Dictionary<int, OldPlayer>> oldPlayers = new Dictionary<Player, Dictionary<int, OldPlayer>>();
+    private Dictionary<PlayerNumber, Dictionary<int, OldPlayer>> oldPlayers = new Dictionary<PlayerNumber, Dictionary<int, OldPlayer>>();
 
     public void init() {
         this.gameBoard = new GameBoard();
         this.player1 = new Player(PlayerNumber.PLAYER1);
         this.player2 = new Player(PlayerNumber.PLAYER2);
-        oldPlayers.Add(this.player1, new Dictionary<int, OldPlayer>());
-        oldPlayers.Add(this.player2, new Dictionary<int, OldPlayer>());
+        oldPlayers.Add(PlayerNumber.PLAYER1, new Dictionary<int, OldPlayer>());
+        oldPlayers.Add(PlayerNumber.PLAYER2, new Dictionary<int, OldPlayer>());
     }
 
     public List<Target> getTargets() {
@@ -108,7 +108,7 @@ public class Model : MonoBehaviour
         Player player = getPlayerForPlayerNumber(playerNumber);
 
         int playerPosition = player.getPlayerPosition();
-        Dictionary<int, OldPlayer> oldPlayerList = this.oldPlayers[player];
+        Dictionary<int, OldPlayer> oldPlayerList = this.oldPlayers[playerNumber];
 
         // don't allow a zap to be fired if there is one in the current player position already
         if (oldPlayerList.ContainsKey(playerPosition)) {
@@ -144,9 +144,7 @@ public class Model : MonoBehaviour
 
         Debug.Log("player removed");
 
-        Player player = getPlayerForPlayerNumber(playerNumber);
-
-        this.oldPlayers[player].Remove(oldPlayer.getPlayerPosition());
+        this.oldPlayers[playerNumber].Remove(oldPlayer.getPlayerPosition());
 
         this.gameBoard.onPlayerRemoved(playerNumber, oldPlayer.getPlayerPosition());
         onZapExpired(new ZapExpiredEventArgs(playerNumber, oldPlayer.getPlayerPosition()));

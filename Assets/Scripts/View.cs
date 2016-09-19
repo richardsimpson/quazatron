@@ -8,7 +8,8 @@ public class View : MonoBehaviour
     private const float INITIAL_Y = 3f;
     private const float Y_INCREMENT = 0.60f;
 
-    private const float LIVES_X = -8f;
+    private const float PLAYER_1_LIVES_X = -8f;
+    private const float PLAYER_2_LIVES_X = 8f;
     private const float LIVES_INITIAL_Y = 4f;
 
     private const int ROW_COUNT = 12;
@@ -28,9 +29,11 @@ public class View : MonoBehaviour
     private AbstractBoardObjectController[,] player1BoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
     private AbstractBoardObjectController[,] player2BoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
 
-    private PlayerController player;
-    private List<PlayerController> playerLives = new List<PlayerController>();
-    private Dictionary<int, PlayerController> oldPlayers = new Dictionary<int, PlayerController>();
+    private PlayerController player1;
+    private PlayerController player2;
+    private List<PlayerController> player1Lives = new List<PlayerController>();
+    private List<PlayerController> player2Lives = new List<PlayerController>();
+    private Dictionary<PlayerNumber, Dictionary<int, PlayerController>> oldPlayers = new Dictionary<PlayerNumber, Dictionary<int, PlayerController>>();
 
     private float player1ColZeroXPos;
     private float player2ColZeroXPos;
@@ -49,6 +52,9 @@ public class View : MonoBehaviour
         constructTargetSummary();
         constructInputViews(player1BoardModel, player1BoardViews, true);
         constructInputViews(player2BoardModel, player2BoardViews, false);
+
+        oldPlayers.Add(PlayerNumber.PLAYER1, new Dictionary<int, PlayerController>());
+        oldPlayers.Add(PlayerNumber.PLAYER2, new Dictionary<int, PlayerController>());
     }
 
     private void constructTargetSummary() {
@@ -87,6 +93,7 @@ public class View : MonoBehaviour
     }
 
     // TODO: See if these methods can be collapsed into a single one
+    // TODO: See if we can tie the PlayerNumber together with isPlayerOne
     private WireController constructWire(int column, int row, bool isPlayerOne) {
         float yPos = INITIAL_Y - (row * Y_INCREMENT);
 
@@ -212,31 +219,58 @@ public class View : MonoBehaviour
         return this.player2BoardViews;
     }
 
-    public PlayerController createPlayer()
+    public PlayerController createPlayer1()
     {
-        this.player = Instantiate<PlayerController>(playerPrefab); 
-        return this.player;
+        this.player1 = Instantiate<PlayerController>(playerPrefab);
+        this.player1.setPlayerNumber(PlayerNumber.PLAYER1);
+        this.player1.transform.Rotate(computeRotation(true));
+        return this.player1;
     }
 
-    public List<PlayerController> createLives(int numberOfLives)
+    public PlayerController createPlayer2()
+    {
+        this.player2 = Instantiate<PlayerController>(playerPrefab); 
+        this.player2.setPlayerNumber(PlayerNumber.PLAYER2);
+        this.player2.transform.Rotate(computeRotation(false));
+        return this.player2;
+    }
+
+    public List<PlayerController> createPlayerLives(List<PlayerController> playerLives, float livesXPos, 
+        int numberOfLives, Vector3 rotation)
     {
         float posY = LIVES_INITIAL_Y;
 
         for (int i = 1 ; i < numberOfLives ; i++) {
             PlayerController player = Instantiate<PlayerController>(playerPrefab);
-            player.transform.position = new Vector3(LIVES_X, posY, 0);
+            player.transform.position = new Vector3(livesXPos, posY, 0);
+            player.transform.Rotate(rotation);
             posY = posY - player.transform.localScale.y;
             player.enabled = false;
             playerLives.Add(player);
         }
 
-        return this.playerLives;
+        return playerLives;
     }
 
-    public void onPlayerMoved(PlayerNumber playerNumber, int position) {
-        // TODO: Make this work for both players
+    public List<PlayerController> createPlayer1Lives(int numberOfLives) {
+        return createPlayerLives(this.player1Lives, PLAYER_1_LIVES_X, numberOfLives, computeRotation(true));
+    }
 
-        this.player.onPlayerMoved(position);
+    public List<PlayerController> createPlayer2Lives(int numberOfLives) {
+        return createPlayerLives(this.player2Lives, PLAYER_2_LIVES_X, numberOfLives, computeRotation(false));
+    }
+
+    private PlayerController getPlayerForPlayerNumber(PlayerNumber playerNumber) {
+        if (PlayerNumber.PLAYER1 == playerNumber) {
+            return this.player1;
+        }
+
+        return this.player2;
+    }
+        
+    public void onPlayerMoved(PlayerNumber playerNumber, int position) {
+        PlayerController player = getPlayerForPlayerNumber(playerNumber);
+        player.onPlayerMoved(position);
     }
 
     public void onBoardObjectActivated(AbstractBoardObjectController boardObjectController) {
@@ -247,28 +281,38 @@ public class View : MonoBehaviour
         boardObjectController.onDeactivated();
     }
 
+    private List<PlayerController> getPlayerLivesForPlayerNumber(PlayerNumber playerNumber) {
+        if (PlayerNumber.PLAYER1 == playerNumber) {
+            return this.player1Lives;
+        }
+
+        return this.player2Lives;
+    }
+
     public void onZapFired(PlayerNumber playerNumber)
     {
         // TODO: Make this work for both players
+        PlayerController player = getPlayerForPlayerNumber(playerNumber);
+        List<PlayerController> playerLives = getPlayerLivesForPlayerNumber(playerNumber);
 
         // move the player one space to the right, 
-        Transform t = this.player.transform;
+        Transform t = player.transform;
         t.position += new Vector3(t.localScale.x, 0, 0);
 
         // disable it's script.
-        this.player.enabled = false;
+        player.enabled = false;
 
         // move it to the list of old players
-        this.oldPlayers.Add(this.player.getPlayerPosition(), this.player);
+        this.oldPlayers[playerNumber].Add(player.getPlayerPosition(), player);
 
         // take the last player object from the Lives list and 'reset' it to be at the initial player position (first wire).
-        if (this.playerLives.Count > 0) {
-            this.player = this.playerLives[this.playerLives.Count-1];
-            this.playerLives.RemoveAt(this.playerLives.Count-1);
-            this.player.reset();
+        if (playerLives.Count > 0) {
+            player = playerLives[playerLives.Count-1];
+            playerLives.RemoveAt(playerLives.Count-1);
+            player.reset();
 
             // then enable it's script.
-            this.player.enabled = true;
+            player.enabled = true;
         }
     }
 
@@ -276,8 +320,9 @@ public class View : MonoBehaviour
         // TODO: Make this work for both players
 
         // Find the entry in oldPlayers that corresponds to the specified playerPosition, then set it inactive.
-        this.oldPlayers[playerPosition].setActive(false);
-        this.oldPlayers.Remove(playerPosition);
+        Dictionary<int, PlayerController> oldPlayerList = this.oldPlayers[playerNumber];
+        oldPlayerList[playerPosition].setActive(false);
+        oldPlayerList.Remove(playerPosition);
     }
 
     public void onTargetSummaryActivated()

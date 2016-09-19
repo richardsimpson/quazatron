@@ -28,15 +28,25 @@ public class PlayerController : MonoBehaviour
     // after a FixedUpdate has happened since they released the fire button.
     private bool fireKeyDown  = true;
 
-    private const float INITIAL_X = -5.46f;
+    private const float PLAYER1_INITIAL_X = -5.46f;
+    private const float PLAYER2_INITIAL_X = 5.46f;
     private const float INITIAL_Y = 3f;
     private const float MOVE_BY_Y = 0.60f;
 
+    private PlayerNumber playerNumber;
     private int playerPosition = 0;
+
+    private float getInitialX() {
+        if (this.playerNumber == PlayerNumber.PLAYER1) {
+            return PLAYER1_INITIAL_X;
+        }
+
+        return PLAYER2_INITIAL_X;
+    }
 
     public void reset()
     {
-        transform.position = new Vector3(INITIAL_X, INITIAL_Y, 0);
+        transform.position = new Vector3(getInitialX(), INITIAL_Y, 0);
         nextActionTime = Time.time;
 
     }
@@ -44,6 +54,10 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     void Start () {
         reset();
+    }
+
+    public void setPlayerNumber(PlayerNumber playerNumber) {
+        this.playerNumber = playerNumber;
     }
 
     private void OnPlayerMoveRequested(PlayerMoveRequestedEventArgs eventArgs) {
@@ -85,7 +99,7 @@ public class PlayerController : MonoBehaviour
     public void onPlayerMoved(int position)
     {
         this.playerPosition = position;
-        transform.position = new Vector3(INITIAL_X, INITIAL_Y - (MOVE_BY_Y*position));
+        transform.position = new Vector3(getInitialX(), INITIAL_Y - (MOVE_BY_Y*position));
     }
 
     public int getPlayerPosition() {

@@ -1,25 +1,8 @@
 ﻿using System;
 using UnityEngine;
 
-public delegate void PlayerMoveRequestedEventHandler(object sender, PlayerMoveRequestedEventArgs e);
-public delegate void FirePressedEventHandler(object sender, FirePressedEventArgs e);
-
-public class FirePressedEventArgs : EventArgs
+public class PlayerController : ZapController
 {
-    public PlayerNumber playerNumber;
-
-    public FirePressedEventArgs(PlayerNumber playerNumber)
-    {
-        this.playerNumber = playerNumber;
-    }    
-
-}
-    
-public class PlayerController : MonoBehaviour
-{
-    public event PlayerMoveRequestedEventHandler playerMoveRequested;
-    public event FirePressedEventHandler firePressed;
-
     private float period = 0.15f;
 
     private float nextActionTime = 0.0f;
@@ -28,48 +11,17 @@ public class PlayerController : MonoBehaviour
     // after a FixedUpdate has happened since they released the fire button.
     private bool fireKeyDown  = true;
 
-    private const float PLAYER1_INITIAL_X = -5.46f;
-    private const float PLAYER2_INITIAL_X = 5.46f;
-    private const float INITIAL_Y = 3f;
-    private const float MOVE_BY_Y = 0.60f;
+    private const float INITIAL_X = -5.46f;
 
-    private PlayerNumber playerNumber;
-    private int playerPosition = 0;
-
-    private float getInitialX() {
-        if (this.playerNumber == PlayerNumber.PLAYER1) {
-            return PLAYER1_INITIAL_X;
-        }
-
-        return PLAYER2_INITIAL_X;
+    protected override float getInitialX() {
+        return INITIAL_X;
     }
 
-    public void reset()
+    public override void reset()
     {
-        transform.position = new Vector3(getInitialX(), INITIAL_Y, 0);
+        base.reset();
         nextActionTime = Time.time;
 
-    }
-
-    // Use this for initialization
-    void Start () {
-        reset();
-    }
-
-    public void setPlayerNumber(PlayerNumber playerNumber) {
-        this.playerNumber = playerNumber;
-    }
-
-    private void OnPlayerMoveRequested(PlayerMoveRequestedEventArgs eventArgs) {
-        Debug.Log("OnPlayerMoveRequested: " + eventArgs.direction);
-        if (playerMoveRequested != null)
-            playerMoveRequested(this, eventArgs);
-    }
-
-    private void OnFirePressed(FirePressedEventArgs eventArgs) {
-        Debug.Log("OnFirePressed.");
-        if (firePressed != null)
-            firePressed(this, eventArgs);
     }
 
     void FixedUpdate() {
@@ -96,18 +48,5 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void onPlayerMoved(int position)
-    {
-        this.playerPosition = position;
-        transform.position = new Vector3(getInitialX(), INITIAL_Y - (MOVE_BY_Y*position));
-    }
-
-    public int getPlayerPosition() {
-        return this.playerPosition;
-    }
-
-    public void setActive(bool active) {
-        this.gameObject.SetActive(active);
-    }
 }
 

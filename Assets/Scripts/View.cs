@@ -23,17 +23,18 @@ public class View : MonoBehaviour
     public ConnectorController connectorOneOutputPrefab;
     public ConnectorController connectorTwoOutputPrefab;
     public PlayerController playerPrefab;
+    public EnemyController enemyPrefab;
 
     private List<TargetController> targets = new List<TargetController>();
     TargetSummaryController targetSummary;
     private AbstractBoardObjectController[,] player1BoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
     private AbstractBoardObjectController[,] player2BoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
 
-    private PlayerController player1;
-    private PlayerController player2;
-    private List<PlayerController> player1Lives = new List<PlayerController>();
-    private List<PlayerController> player2Lives = new List<PlayerController>();
-    private Dictionary<PlayerNumber, Dictionary<int, PlayerController>> oldPlayers = new Dictionary<PlayerNumber, Dictionary<int, PlayerController>>();
+    private ZapController player1;
+    private ZapController player2;
+    private List<ZapController> player1Lives = new List<ZapController>();
+    private List<ZapController> player2Lives = new List<ZapController>();
+    private Dictionary<PlayerNumber, Dictionary<int, ZapController>> oldPlayers = new Dictionary<PlayerNumber, Dictionary<int, ZapController>>();
 
     private float player1ColZeroXPos;
     private float player2ColZeroXPos;
@@ -53,8 +54,8 @@ public class View : MonoBehaviour
         constructInputViews(player1BoardModel, player1BoardViews, true);
         constructInputViews(player2BoardModel, player2BoardViews, false);
 
-        oldPlayers.Add(PlayerNumber.PLAYER1, new Dictionary<int, PlayerController>());
-        oldPlayers.Add(PlayerNumber.PLAYER2, new Dictionary<int, PlayerController>());
+        oldPlayers.Add(PlayerNumber.PLAYER1, new Dictionary<int, ZapController>());
+        oldPlayers.Add(PlayerNumber.PLAYER2, new Dictionary<int, ZapController>());
     }
 
     private void constructTargetSummary() {
@@ -219,23 +220,19 @@ public class View : MonoBehaviour
         return this.player2BoardViews;
     }
 
-    public PlayerController createPlayer1()
+    public ZapController createPlayer1()
     {
         this.player1 = Instantiate<PlayerController>(playerPrefab);
-        this.player1.setPlayerNumber(PlayerNumber.PLAYER1);
-        this.player1.transform.Rotate(computeRotation(true));
         return this.player1;
     }
 
-    public PlayerController createPlayer2()
+    public ZapController createPlayer2()
     {
-        this.player2 = Instantiate<PlayerController>(playerPrefab); 
-        this.player2.setPlayerNumber(PlayerNumber.PLAYER2);
-        this.player2.transform.Rotate(computeRotation(false));
+        this.player2 = Instantiate<EnemyController>(enemyPrefab); 
         return this.player2;
     }
 
-    public List<PlayerController> createPlayerLives(List<PlayerController> playerLives, float livesXPos, 
+    public List<ZapController> createPlayerLives(List<ZapController> playerLives, float livesXPos, 
         int numberOfLives, Vector3 rotation)
     {
         float posY = LIVES_INITIAL_Y;
@@ -252,15 +249,15 @@ public class View : MonoBehaviour
         return playerLives;
     }
 
-    public List<PlayerController> createPlayer1Lives(int numberOfLives) {
+    public List<ZapController> createPlayer1Lives(int numberOfLives) {
         return createPlayerLives(this.player1Lives, PLAYER_1_LIVES_X, numberOfLives, computeRotation(true));
     }
 
-    public List<PlayerController> createPlayer2Lives(int numberOfLives) {
+    public List<ZapController> createPlayer2Lives(int numberOfLives) {
         return createPlayerLives(this.player2Lives, PLAYER_2_LIVES_X, numberOfLives, computeRotation(false));
     }
 
-    private PlayerController getPlayerForPlayerNumber(PlayerNumber playerNumber) {
+    private ZapController getPlayerForPlayerNumber(PlayerNumber playerNumber) {
         if (PlayerNumber.PLAYER1 == playerNumber) {
             return this.player1;
         }
@@ -269,7 +266,7 @@ public class View : MonoBehaviour
     }
         
     public void onPlayerMoved(PlayerNumber playerNumber, int position) {
-        PlayerController player = getPlayerForPlayerNumber(playerNumber);
+        ZapController player = getPlayerForPlayerNumber(playerNumber);
         player.onPlayerMoved(position);
     }
 
@@ -281,7 +278,7 @@ public class View : MonoBehaviour
         boardObjectController.onDeactivated();
     }
 
-    private List<PlayerController> getPlayerLivesForPlayerNumber(PlayerNumber playerNumber) {
+    private List<ZapController> getPlayerLivesForPlayerNumber(PlayerNumber playerNumber) {
         if (PlayerNumber.PLAYER1 == playerNumber) {
             return this.player1Lives;
         }
@@ -291,9 +288,8 @@ public class View : MonoBehaviour
 
     public void onZapFired(PlayerNumber playerNumber)
     {
-        // TODO: Make this work for both players
-        PlayerController player = getPlayerForPlayerNumber(playerNumber);
-        List<PlayerController> playerLives = getPlayerLivesForPlayerNumber(playerNumber);
+        ZapController player = getPlayerForPlayerNumber(playerNumber);
+        List<ZapController> playerLives = getPlayerLivesForPlayerNumber(playerNumber);
 
         // move the player one space to the right, 
         Transform t = player.transform;
@@ -311,6 +307,13 @@ public class View : MonoBehaviour
             playerLives.RemoveAt(playerLives.Count-1);
             player.reset();
 
+            if (PlayerNumber.PLAYER1 == playerNumber) {
+                this.player1 = player;
+            }
+            else {
+                this.player2 = player;
+            }
+
             // then enable it's script.
             player.enabled = true;
         }
@@ -320,7 +323,7 @@ public class View : MonoBehaviour
         // TODO: Make this work for both players
 
         // Find the entry in oldPlayers that corresponds to the specified playerPosition, then set it inactive.
-        Dictionary<int, PlayerController> oldPlayerList = this.oldPlayers[playerNumber];
+        Dictionary<int, ZapController> oldPlayerList = this.oldPlayers[playerNumber];
         oldPlayerList[playerPosition].setActive(false);
         oldPlayerList.Remove(playerPosition);
     }

@@ -54,22 +54,22 @@ public class Controller : MonoBehaviour
         addToDictionary(targets, targetViews);
 
         // setup the players (views)
-        PlayerController player1 = this.view.createPlayer1();
+        ZapController player1 = this.view.createPlayer1();
         player1.playerMoveRequested += onPlayerMoveRequested;
         player1.firePressed += onFirePressed;
 
-        PlayerController player2 = this.view.createPlayer2();
+        ZapController player2 = this.view.createPlayer2();
         player2.playerMoveRequested += onPlayerMoveRequested;
         player2.firePressed += onFirePressed;
 
         // setup the players lives (view)
-        List<PlayerController> player1Lives = this.view.createPlayer1Lives(this.model.getNumberOfLives());
+        List<ZapController> player1Lives = this.view.createPlayer1Lives(this.model.getNumberOfLives());
         for (int i = 0 ; i < player1Lives.Count ; i++) {
             player1Lives[i].playerMoveRequested += onPlayerMoveRequested;
             player1Lives[i].firePressed += onFirePressed;
         }
 
-        List<PlayerController> player2Lives = this.view.createPlayer2Lives(this.model.getNumberOfLives());
+        List<ZapController> player2Lives = this.view.createPlayer2Lives(this.model.getNumberOfLives());
         for (int i = 0 ; i < player2Lives.Count ; i++) {
             player2Lives[i].playerMoveRequested += onPlayerMoveRequested;
             player2Lives[i].firePressed += onFirePressed;

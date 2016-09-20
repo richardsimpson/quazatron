@@ -23,7 +23,7 @@ public class ZapController : MonoBehaviour
     private const float INITIAL_Y = 3f;
     private const float MOVE_BY_Y = 0.60f;
 
-    private int playerPosition = 0;
+    protected int playerPosition = 0;
 
     protected virtual float getInitialX() {
         throw new Exception("getInitialX must be overridden");

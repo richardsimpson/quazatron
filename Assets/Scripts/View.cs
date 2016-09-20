@@ -232,8 +232,10 @@ public class View : MonoBehaviour
 
     public ZapController createPlayer2()
     {
-        this.player2 = Instantiate<EnemyController>(enemyPrefab); 
-        return this.player2;
+        EnemyController player = Instantiate<EnemyController>(enemyPrefab);
+        player.setBoard(this.player2BoardViews); 
+        this.player2 = player;
+        return player;
     }
 
     public List<ZapController> createPlayerLives(List<ZapController> playerLives, ZapController prefab, float livesXPos, 
@@ -289,14 +291,25 @@ public class View : MonoBehaviour
         return this.player2Lives;
     }
 
+    private Vector3 getMovementForPlayerNumber(PlayerNumber playerNumber) {
+        ZapController player = getPlayerForPlayerNumber(playerNumber);
+        Transform t = player.transform;
+
+        if (PlayerNumber.PLAYER1 == playerNumber) {
+            return new Vector3(t.localScale.x, 0, 0);
+        }
+
+        return new Vector3(-t.localScale.x, 0, 0);
+    }
+
     public void onZapFired(PlayerNumber playerNumber)
     {
         ZapController player = getPlayerForPlayerNumber(playerNumber);
         List<ZapController> playerLives = getPlayerLivesForPlayerNumber(playerNumber);
 
-        // move the player one space to the right, 
+        // move the player one space to the right, (or to the left, for player2)
         Transform t = player.transform;
-        t.position += new Vector3(t.localScale.x, 0, 0);
+        t.position += getMovementForPlayerNumber(playerNumber);
 
         // disable it's script.
         player.enabled = false;

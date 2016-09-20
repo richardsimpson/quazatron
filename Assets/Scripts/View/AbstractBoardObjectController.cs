@@ -10,6 +10,8 @@ public class AbstractBoardObjectController : MonoBehaviour
 
     protected PlayerNumber playerNumber;
 
+    private bool activated = false;
+
     public AbstractBoardObjectController() {
 
     }
@@ -19,11 +21,16 @@ public class AbstractBoardObjectController : MonoBehaviour
     }
 
     public virtual void onActivated() {
-
+        this.activated = true;
     }
 
     public virtual void onDeactivated() {
-
+        this.activated = false;
     }
+
+    public bool isActivated() {
+        return this.activated;
+    }
+
 }
 

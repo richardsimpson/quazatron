@@ -37,6 +37,7 @@ public class InitiatorController : AbstractBoardObjectController {
 
     public override void onActivated()
     {
+        base.onActivated();
         wireRenderer.color = YELLOW;
     }
 

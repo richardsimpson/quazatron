@@ -37,6 +37,7 @@ public class SwapperController : AbstractBoardObjectController {
 
     public override void onActivated()
     {
+        base.onActivated();
         wireRenderer.color = YELLOW;
     }
 

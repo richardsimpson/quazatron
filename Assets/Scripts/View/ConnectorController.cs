@@ -34,6 +34,7 @@ public class ConnectorController : AbstractBoardObjectController {
 
     public override void onActivated()
     {
+        base.onActivated();
         for (int i = 0 ; i < wireRenderers.Count ; i++) {
             wireRenderers[i].color = YELLOW;
         }

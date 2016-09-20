@@ -21,7 +21,6 @@ public class PlayerController : ZapController
     {
         base.reset();
         nextActionTime = Time.time;
-
     }
 
     void FixedUpdate() {

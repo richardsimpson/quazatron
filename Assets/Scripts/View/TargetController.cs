@@ -17,6 +17,7 @@ public class TargetController : AbstractBoardObjectController {
 
     public override void onActivated()
     {
+        base.onActivated();
         targetRenderer.color = YELLOW;
     }
 

@@ -37,6 +37,10 @@ public abstract class AbstractBoardObject : BoardObject
             boardObjectDeactivated(this, eventArgs);
     }
 
+    protected virtual PlayerNumber translatePlayerNumberForOutput(PlayerNumber playerNumber) {
+        return playerNumber;
+    }
+
     public virtual void inputActivated(BoardObject input, PlayerNumber playerNumber) {
         // Only execute OnBoardObjectActivated and the outputs' inputActivated if ALL inputs are activated.
 
@@ -52,7 +56,7 @@ public abstract class AbstractBoardObject : BoardObject
             OnBoardObjectActivated(new BoardObjectActivatedEventArgs(playerNumber));
 
             for (int i = 0 ; i < this.outputs.Count ; i++) {
-                outputs[i].inputActivated(this, playerNumber);
+                outputs[i].inputActivated(this, translatePlayerNumberForOutput(playerNumber));
             }
         }
     }

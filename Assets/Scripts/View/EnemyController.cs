@@ -44,7 +44,7 @@ public class EnemyController : ZapController
 
         for (int i = 0 ; i < this.validInputs.Count ; i++) {
             if (!this.boardViews[0,i].isActivated()) {
-                currentlyValidInputs.Add(i);
+                currentlyValidInputs.Add(this.validInputs[i]);
             }
         }
 

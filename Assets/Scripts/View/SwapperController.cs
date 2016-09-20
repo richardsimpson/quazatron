@@ -35,10 +35,11 @@ public class SwapperController : AbstractBoardObjectController {
         }
     }
 
-    public override void onActivated()
+    public override void onActivated(PlayerNumber playerNumber)
     {
-        base.onActivated();
-        wireRenderer.color = YELLOW;
+        base.onActivated(playerNumber);
+        // TODO: Need to have the swapper switch the colour - will need to change control to have two wire components
+        wireRenderer.color = getColourForPlayerNumber(playerNumber);
     }
 
     public override void onDeactivated()

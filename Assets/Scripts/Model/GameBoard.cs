@@ -38,7 +38,7 @@ public class GameBoard
         for (int i = 0 ; i < ROW_COUNT ; i++) {
             Target target = new Target();
             target.boardObjectActivated += onTargetActivatedStateChanged;
-            target.boardObjectDeactivated += onTargetActivatedStateChanged;
+            target.boardObjectDeactivated += onTargetDeactivatedStateChanged;
             this.targets.Add(target);
         }
 
@@ -130,7 +130,7 @@ public class GameBoard
     public void onFirePressed(PlayerNumber playerNumber, int playerPosition)
     {
         BoardObject[,] board = getBoardForPlayerNumber(playerNumber);
-        board[0, playerPosition].inputActivated(null);
+        board[0, playerPosition].inputActivated(null, playerNumber);
     }
 
     public void onPlayerRemoved(PlayerNumber playerNumber, int playerPosition)
@@ -151,7 +151,7 @@ public class GameBoard
             targetSummaryDeactivated(this, eventArgs);
     }
 
-    private void onTargetActivatedStateChanged(BoardObject sender, EventArgs e) {
+    private void recalculateTargetSummaryState() {
         int activeCount = 0;
         for (int i = 0 ; i < this.targets.Count ; i++) {
             if (this.targets[i].isActivated()) {
@@ -167,6 +167,14 @@ public class GameBoard
         else {
             OnTargetSummaryDeactivated(EventArgs.Empty);
         }
+    }
+
+    private void onTargetActivatedStateChanged(BoardObject sender, BoardObjectActivatedEventArgs e) {
+        recalculateTargetSummaryState();
+    }
+
+    private void onTargetDeactivatedStateChanged(BoardObject sender, EventArgs e) {
+        recalculateTargetSummaryState();
     }
 
 }

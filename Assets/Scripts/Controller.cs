@@ -131,8 +131,8 @@ public class Controller : MonoBehaviour
         this.view.onPlayerMoved(e.playerNumber, e.position);
     }
 
-    private void onBoardObjectActivated(BoardObject sender, EventArgs e) {
-        this.view.onBoardObjectActivated(this.modelToViewBoardObjects[sender]);
+    private void onBoardObjectActivated(BoardObject sender, BoardObjectActivatedEventArgs e) {
+        this.view.onBoardObjectActivated(this.modelToViewBoardObjects[sender], e.playerNumber);
     }
 
     private void onBoardObjectDeactivated(BoardObject sender, EventArgs e) {

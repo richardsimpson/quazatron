@@ -32,11 +32,12 @@ public class ConnectorController : AbstractBoardObjectController {
         }
         }
 
-    public override void onActivated()
+    public override void onActivated(PlayerNumber playerNumber)
     {
-        base.onActivated();
+        base.onActivated(playerNumber);
+        Color newColour = getColourForPlayerNumber(playerNumber);
         for (int i = 0 ; i < wireRenderers.Count ; i++) {
-            wireRenderers[i].color = YELLOW;
+            wireRenderers[i].color = newColour;
         }
     }
 

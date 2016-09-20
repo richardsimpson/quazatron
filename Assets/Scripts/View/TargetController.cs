@@ -15,10 +15,10 @@ public class TargetController : AbstractBoardObjectController {
 	
 	}
 
-    public override void onActivated()
+    public override void onActivated(PlayerNumber playerNumber)
     {
-        base.onActivated();
-        targetRenderer.color = YELLOW;
+        base.onActivated(playerNumber);
+        targetRenderer.color = getColourForPlayerNumber(playerNumber);
     }
 
     public override void onDeactivated()

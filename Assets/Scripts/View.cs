@@ -281,8 +281,8 @@ public class View : MonoBehaviour
         player.onPlayerMoved(position);
     }
 
-    public void onBoardObjectActivated(AbstractBoardObjectController boardObjectController) {
-        boardObjectController.onActivated();
+    public void onBoardObjectActivated(AbstractBoardObjectController boardObjectController, PlayerNumber playerNumber) {
+        boardObjectController.onActivated(playerNumber);
     }
 
     public void onBoardObjectDeactivated(AbstractBoardObjectController boardObjectController) {

@@ -25,7 +25,7 @@ public abstract class AbstractBoardObject : BoardObject
         this.inputs.Add(input);
     }
 
-    protected void OnBoardObjectActivated(EventArgs eventArgs) {
+    protected void OnBoardObjectActivated(BoardObjectActivatedEventArgs eventArgs) {
         Debug.Log("OnBoardObjectActivated.");
         if (boardObjectActivated != null)
             boardObjectActivated(this, eventArgs);
@@ -37,7 +37,7 @@ public abstract class AbstractBoardObject : BoardObject
             boardObjectDeactivated(this, eventArgs);
     }
 
-    public virtual void inputActivated(BoardObject input) {
+    public virtual void inputActivated(BoardObject input, PlayerNumber playerNumber) {
         // Only execute OnBoardObjectActivated and the outputs' inputActivated if ALL inputs are activated.
 
         bool allInputsActivated = true;
@@ -49,10 +49,10 @@ public abstract class AbstractBoardObject : BoardObject
 
         if (allInputsActivated) {
             this.activated = true;
-            OnBoardObjectActivated(EventArgs.Empty);
+            OnBoardObjectActivated(new BoardObjectActivatedEventArgs(playerNumber));
 
             for (int i = 0 ; i < this.outputs.Count ; i++) {
-                outputs[i].inputActivated(this);
+                outputs[i].inputActivated(this, playerNumber);
             }
         }
     }

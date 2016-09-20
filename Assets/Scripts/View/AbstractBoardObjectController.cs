@@ -20,7 +20,7 @@ public class AbstractBoardObjectController : MonoBehaviour
         this.playerNumber = playerNumber;
     }
 
-    public virtual void onActivated() {
+    public virtual void onActivated(PlayerNumber playerNumber) {
         this.activated = true;
     }
 
@@ -32,5 +32,12 @@ public class AbstractBoardObjectController : MonoBehaviour
         return this.activated;
     }
 
+    protected Color getColourForPlayerNumber(PlayerNumber playerNumber) {
+        if (PlayerNumber.PLAYER1 == playerNumber) {
+            return YELLOW;
+        }
+
+        return BLUE;
+    }
 }
 

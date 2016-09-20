@@ -14,10 +14,10 @@ public class WireController : AbstractBoardObjectController {
 	
 	}
 
-    public override void onActivated()
+    public override void onActivated(PlayerNumber playerNumber)
     {
-        base.onActivated();
-        wireRenderer.color = YELLOW;
+        base.onActivated(playerNumber);
+        wireRenderer.color = getColourForPlayerNumber(playerNumber);
     }
 
     public override void onDeactivated()

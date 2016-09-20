@@ -4,6 +4,7 @@ using UnityEngine;
 public class TerminatorController : AbstractBoardObjectController {
 
     private SpriteRenderer wireRenderer = null;
+    private SpriteRenderer terminatorRenderer = null;
 
     // Use this for initialization
     void Start () {
@@ -13,10 +14,24 @@ public class TerminatorController : AbstractBoardObjectController {
             if (comps[i].sprite.name == "Wire") {
                 wireRenderer = comps[i];
             }
+            else if (comps[i].sprite.name == "Zap") {
+                terminatorRenderer = comps[i];
+            }
         }
 
         if (wireRenderer == null) {
             throw new Exception("Cannot locate wire component");
+        }
+
+        if (terminatorRenderer == null) {
+            throw new Exception("Cannot locate terminator component");
+        }
+
+        if (playerNumber == PlayerNumber.PLAYER1) {
+            terminatorRenderer.color = YELLOW;
+        }
+        else {
+            terminatorRenderer.color = BLUE;
         }
     }
 

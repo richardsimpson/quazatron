@@ -259,7 +259,13 @@ public class View : MonoBehaviour
     }
 
     public List<ZapController> createPlayer2Lives(int numberOfLives) {
-        return createPlayerLives(this.player2Lives, enemyPrefab, PLAYER_2_LIVES_X, numberOfLives);
+        List<ZapController> players = createPlayerLives(this.player2Lives, enemyPrefab, PLAYER_2_LIVES_X, numberOfLives);
+
+        for (int i = 0 ; i < players.Count ; i++) {
+            ((EnemyController)players[i]).setBoard(this.player2BoardViews);
+        }
+
+        return players;
     }
 
     private ZapController getPlayerForPlayerNumber(PlayerNumber playerNumber) {

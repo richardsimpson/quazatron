@@ -47,7 +47,7 @@ public class Controller : MonoBehaviour
 
         // Create the map/dictionary of model -> view elements, so can instruct changes in the view.
         AbstractBoardObjectController[,] player1BoardViews = this.view.getPlayer1Board();
-        AbstractBoardObjectController[,] player2BoardViews = this.view.getPlayer1Board();
+        AbstractBoardObjectController[,] player2BoardViews = this.view.getPlayer2Board();
         List<TargetController> targetViews = this.view.getTargets();
         addToDictionary(player1Board, player1BoardViews);
         addToDictionary(player2Board, player2BoardViews);

@@ -26,7 +26,7 @@ public class View : MonoBehaviour
     public EnemyController enemyPrefab;
 
     private List<TargetController> targets = new List<TargetController>();
-    TargetSummaryController targetSummary;
+    private TargetSummaryController targetSummary;
     private AbstractBoardObjectController[,] player1BoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
     private AbstractBoardObjectController[,] player2BoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
 
@@ -232,15 +232,14 @@ public class View : MonoBehaviour
         return this.player2;
     }
 
-    public List<ZapController> createPlayerLives(List<ZapController> playerLives, float livesXPos, 
-        int numberOfLives, Vector3 rotation)
+    public List<ZapController> createPlayerLives(List<ZapController> playerLives, ZapController prefab, float livesXPos, 
+        int numberOfLives)
     {
         float posY = LIVES_INITIAL_Y;
 
         for (int i = 1 ; i < numberOfLives ; i++) {
-            PlayerController player = Instantiate<PlayerController>(playerPrefab);
+            ZapController player = Instantiate<ZapController>(prefab);
             player.transform.position = new Vector3(livesXPos, posY, 0);
-            player.transform.Rotate(rotation);
             posY = posY - player.transform.localScale.y;
             player.enabled = false;
             playerLives.Add(player);
@@ -250,11 +249,11 @@ public class View : MonoBehaviour
     }
 
     public List<ZapController> createPlayer1Lives(int numberOfLives) {
-        return createPlayerLives(this.player1Lives, PLAYER_1_LIVES_X, numberOfLives, computeRotation(true));
+        return createPlayerLives(this.player1Lives, playerPrefab, PLAYER_1_LIVES_X, numberOfLives);
     }
 
     public List<ZapController> createPlayer2Lives(int numberOfLives) {
-        return createPlayerLives(this.player2Lives, PLAYER_2_LIVES_X, numberOfLives, computeRotation(false));
+        return createPlayerLives(this.player2Lives, enemyPrefab, PLAYER_2_LIVES_X, numberOfLives);
     }
 
     private ZapController getPlayerForPlayerNumber(PlayerNumber playerNumber) {

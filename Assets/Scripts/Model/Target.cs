@@ -37,7 +37,9 @@ public class Target : AbstractBoardObject
             return;
         }
 
-        this.controllingPlayer = PlayerNumber.NEITHER;
+        // only other possible situation is that there are no active inputs.  The previous controlling
+        // player have been either PLAYER1 or PLAYER2 (it cannot be BOTH), so we just leave the
+        // controlling player as is
     }
 
     private void fireActiveEventIfNecessary() {
@@ -60,6 +62,11 @@ public class Target : AbstractBoardObject
 
     public PlayerNumber getControllingPlayer() {
         return this.controllingPlayer;
+    }
+
+    public void setControllingPlayer(PlayerNumber playerNumber) {
+        this.controllingPlayer = playerNumber;
+        OnBoardObjectActivated(new BoardObjectActivatedEventArgs(this.controllingPlayer));
     }
 }
 

@@ -39,8 +39,7 @@ public class Controller : MonoBehaviour
 
         this.model.zapFired += onZapFired;
         this.model.zapExpired += onZapExpired;
-        this.model.getGameBoard().targetSummaryActivated += onTargetSummaryActivated;
-        this.model.getGameBoard().targetSummaryDeactivated += onTargetSummaryDeactivated;
+        this.model.getGameBoard().targetSummaryUpdated += onTargetSummaryUpdated;
 
         // create the view - one component for each element in the model.
         this.view.init(player1Board, player2Board);
@@ -78,6 +77,16 @@ public class Controller : MonoBehaviour
         // listen for the model changing the player position
         this.model.getPlayer1().playerMoved += onPlayerMoved;
         this.model.getPlayer2().playerMoved += onPlayerMoved;
+
+        // setup the targets to an initial state where they alternate between player1 and player2
+        for (int i = 0; i < targets.Count ; i++) {
+            if (i % 2 == 0) {
+                targets[i].setControllingPlayer(PlayerNumber.PLAYER1);
+            }
+            else {
+                targets[i].setControllingPlayer(PlayerNumber.PLAYER2);
+            }
+        }
     }
 
     private void addToDictionary(BoardObject[,] board, AbstractBoardObjectController[,] boardViews) {
@@ -106,14 +115,9 @@ public class Controller : MonoBehaviour
         this.view.onZapExpired(e.playerNumber, e.playerPosition);
     }
 
-    void onTargetSummaryActivated(GameBoard sender, EventArgs e)
+    void onTargetSummaryUpdated(GameBoard sender, TargetSummaryUpdatedEventArgs e)
     {
-        this.view.onTargetSummaryActivated();
-    }
-
-    void onTargetSummaryDeactivated(GameBoard sender, EventArgs e)
-    {
-        this.view.onTargetSummaryDeactivated();
+        this.view.onTargetSummaryUpdated(e.playerNumber);
     }
 
     private void onPlayerMoveRequested(object sender, PlayerMoveRequestedEventArgs e) 

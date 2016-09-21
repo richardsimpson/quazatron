@@ -352,13 +352,9 @@ public class View : MonoBehaviour
         oldPlayerList.Remove(playerPosition);
     }
 
-    public void onTargetSummaryActivated()
+    public void onTargetSummaryUpdated(PlayerNumber playerNumber)
     {
-        this.targetSummary.onActivated();
+        this.targetSummary.onUpdated(playerNumber);
     }
 
-    public void onTargetSummaryDeactivated()
-    {
-        this.targetSummary.onDeactivated();
-    }
 }

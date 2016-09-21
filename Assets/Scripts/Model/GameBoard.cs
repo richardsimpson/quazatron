@@ -19,13 +19,21 @@ using UnityEngine;
 // Note also that a player cannot fire into a row that alrady has an active zap.
 
 // NOTE: This will ultimately indicate which player is winning, via an enum (just like wires), but for now the event is empty.
-public delegate void TargetSummaryActivatedEventHandler(GameBoard sender, EventArgs e);
-public delegate void TargetSummaryDeactivatedEventHandler(GameBoard sender, EventArgs e);
+public delegate void TargetSummaryUpdatedEventHandler(GameBoard sender, TargetSummaryUpdatedEventArgs e);
+
+public class TargetSummaryUpdatedEventArgs : EventArgs
+{
+    public PlayerNumber playerNumber;
+
+    public TargetSummaryUpdatedEventArgs(PlayerNumber playerNumber)
+    {
+        this.playerNumber = playerNumber;
+    }    
+}
 
 public class GameBoard
 {
-    public event TargetSummaryActivatedEventHandler targetSummaryActivated;
-    public event TargetSummaryDeactivatedEventHandler targetSummaryDeactivated;
+    public event TargetSummaryUpdatedEventHandler targetSummaryUpdated;
 
     private const int ROW_COUNT = 12;
 
@@ -38,7 +46,6 @@ public class GameBoard
         for (int i = 0 ; i < ROW_COUNT ; i++) {
             Target target = new Target();
             target.boardObjectActivated += onTargetActivatedStateChanged;
-            target.boardObjectDeactivated += onTargetDeactivatedStateChanged;
             this.targets.Add(target);
         }
 
@@ -139,33 +146,34 @@ public class GameBoard
         board[0, playerPosition].inputDeactivated(null);
     }
 
-    protected void OnTargetSummaryActivated(EventArgs eventArgs) {
-        Debug.Log("OnTargetSummaryActivated.");
-        if (targetSummaryActivated != null)
-            targetSummaryActivated(this, eventArgs);
-    }
-
-    protected void OnTargetSummaryDeactivated(EventArgs eventArgs) {
-        Debug.Log("OnTargetSummaryDeactivated.");
-        if (targetSummaryDeactivated != null)
-            targetSummaryDeactivated(this, eventArgs);
+    protected void OnTargetSummaryUpdated(TargetSummaryUpdatedEventArgs eventArgs) {
+        Debug.Log("OnTargetSummaryUpdated.");
+        if (targetSummaryUpdated != null)
+            targetSummaryUpdated(this, eventArgs);
     }
 
     private void recalculateTargetSummaryState() {
-        int activeCount = 0;
+        int player1Targets = 0;
+        int player2Targets = 0;
+
         for (int i = 0 ; i < this.targets.Count ; i++) {
-            if (this.targets[i].isActivated()) {
-                activeCount = activeCount + 1;
+            PlayerNumber controllingPlayer = this.targets[i].getControllingPlayer();
+            if (PlayerNumber.PLAYER1 == controllingPlayer) {
+                player1Targets = player1Targets + 1;
+            }
+            else if (PlayerNumber.PLAYER2 == controllingPlayer) {
+                player2Targets = player2Targets + 1;
             }
         }
 
-        // TODO: when we have two players, we should indicate who controls the target summary, so the view can 
-        // show it as Yellow, Black or Blue.  For now, just activate / de-activate
-        if (activeCount > ROW_COUNT / 2) {
-            OnTargetSummaryActivated(EventArgs.Empty);
+        if (player1Targets > player2Targets) {
+            OnTargetSummaryUpdated(new TargetSummaryUpdatedEventArgs(PlayerNumber.PLAYER1));
+        }
+        else if (player1Targets < player2Targets) {
+            OnTargetSummaryUpdated(new TargetSummaryUpdatedEventArgs(PlayerNumber.PLAYER2));
         }
         else {
-            OnTargetSummaryDeactivated(EventArgs.Empty);
+            OnTargetSummaryUpdated(new TargetSummaryUpdatedEventArgs(PlayerNumber.NEITHER));
         }
     }
 
@@ -173,6 +181,7 @@ public class GameBoard
         recalculateTargetSummaryState();
     }
 
+    // TODO: Is this used?
     private void onTargetDeactivatedStateChanged(BoardObject sender, EventArgs e) {
         recalculateTargetSummaryState();
     }

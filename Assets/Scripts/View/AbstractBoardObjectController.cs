@@ -8,6 +8,7 @@ public class AbstractBoardObjectController : MonoBehaviour
     protected Color BLUE = new Color(0F, 0F, 1F);
     protected Color BLACK = new Color(0F, 0F, 0F);
 
+    // This is the player that 'owns' the component.  This does NOT change.
     protected PlayerNumber playerNumber;
 
     private bool activated = false;

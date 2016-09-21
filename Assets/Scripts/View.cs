@@ -59,12 +59,14 @@ public class View : MonoBehaviour
     }
 
     private void constructTargetSummary() {
+        // Initially, the target summary should be black
         this.targetSummary = Instantiate(targetSummaryPrefab);
         float posY = INITIAL_Y + this.targets[0].transform.localScale.y/2 + this.targetSummary.transform.localScale.y/2 + 0.10f; //0.10f = Y_INCREMENT - height of targetPrefab
         this.targetSummary.transform.position = new Vector3(0, posY, 0);
     }
 
     private void constructTargetViews() {
+        // TODO: Initially, the targets should alternate between yellow and blue
         float yPos = INITIAL_Y;
 
         for (int index = 0 ; index < ROW_COUNT ; index++) {

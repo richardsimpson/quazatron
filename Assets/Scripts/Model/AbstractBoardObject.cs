@@ -61,7 +61,7 @@ public abstract class AbstractBoardObject : BoardObject
         }
     }
 
-    public void inputDeactivated(BoardObject input) {
+    public virtual void inputDeactivated(BoardObject input) {
         this.activated = false;
         OnBoardObjectDeactivated(EventArgs.Empty);
 

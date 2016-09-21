@@ -3,6 +3,8 @@
 public enum PlayerNumber
 {
     PLAYER1,
-    PLAYER2
+    PLAYER2,
+    BOTH,
+    NEITHER
 };
 

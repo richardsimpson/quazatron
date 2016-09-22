@@ -4,7 +4,6 @@ using UnityEngine;
 public class PlayerController : ZapController
 {
     private float period = 0.15f;
-
     private float nextActionTime = 0.0f;
 
     // this is to ensure that the user doesn't fire all their zaps in one go!  Essentially a zap can only be fired

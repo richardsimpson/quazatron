@@ -8,6 +8,7 @@ public class TargetSummaryController : MonoBehaviour {
     private Color BLACK = new Color(0F, 0F, 0F);
 
     private SpriteRenderer spriteRenderer;
+    private PlayerNumber currentWinner;
 
     // Use this for initialization.  Using Awake instead of Start, because the controller will cause a call
     // to onActivated before Start() is called.
@@ -20,8 +21,14 @@ public class TargetSummaryController : MonoBehaviour {
 
     }
 
+    public PlayerNumber getWinner() {
+        return this.currentWinner;
+    }
+
     public void onUpdated(PlayerNumber playerNumber)
     {
+        this.currentWinner = playerNumber;
+
         if (PlayerNumber.PLAYER1 == playerNumber) {
             spriteRenderer.color = YELLOW;
         }

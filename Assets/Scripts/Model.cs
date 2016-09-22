@@ -33,6 +33,7 @@ public class ZapFiredEventArgs : EventArgs
 public class Model : MonoBehaviour
 {
     private const int NUMBER_OF_LIVES = 8;
+    private const float ZAP_LIFETIME = 8.5f;
 
     public event ZapFiredEventHandler zapFired;
     public event ZapExpiredEventHandler zapExpired;
@@ -140,7 +141,7 @@ public class Model : MonoBehaviour
 
     private IEnumerator<WaitForSeconds> removePlayer(PlayerNumber playerNumber, OldPlayer oldPlayer) {
 
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(ZAP_LIFETIME);
 
         Debug.Log("player removed");
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // extends MonoBehaviour so that we can wire it into the Application object in Unity
 public class View : MonoBehaviour
@@ -24,6 +25,8 @@ public class View : MonoBehaviour
     public ConnectorController connectorTwoOutputPrefab;
     public PlayerController playerPrefab;
     public EnemyController enemyPrefab;
+    public TimeLeftController timeLeftText;
+    public Text gameOverText;
 
     private List<TargetController> targets = new List<TargetController>();
     private TargetSummaryController targetSummary;
@@ -56,6 +59,27 @@ public class View : MonoBehaviour
 
         oldPlayers.Add(PlayerNumber.PLAYER1, new Dictionary<int, ZapController>());
         oldPlayers.Add(PlayerNumber.PLAYER2, new Dictionary<int, ZapController>());
+
+        timeLeftText.gameOver += onGameOver;
+    }
+
+    private void onGameOver(TimeLeftController sender, EventArgs e)
+    {
+        PlayerNumber winner = this.targetSummary.getWinner();
+
+        this.gameOverText.text = "Game Over.\n";
+        if (PlayerNumber.PLAYER1 == winner) {
+            this.gameOverText.text = this.gameOverText.text + "You Win!";
+        }
+        else if (PlayerNumber.PLAYER2 == winner) {
+            this.gameOverText.text = this.gameOverText.text + "You Lose!";
+        }
+        else {
+            this.gameOverText.text = this.gameOverText.text + "Draw!";
+        }
+
+        this.gameOverText.gameObject.SetActive(true);
+        Time.timeScale = 0;
     }
 
     private void constructTargetSummary() {

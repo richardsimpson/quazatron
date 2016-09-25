@@ -309,17 +309,17 @@ MonoBehaviour:
     type: 2}
   targetPrefab: {fileID: 114000011523469340, guid: 05cdd464c08854d1c851df81159e9280,
     type: 2}
-  wirePrefab: {fileID: 114000011219656882, guid: 9b74b1b0a289c4535be1c869e807508a,
+  wirePrefab: {fileID: 114000011405833234, guid: fd8a22b6ae7cb49229730d5edeea3eb1,
     type: 2}
-  initiatorPrefab: {fileID: 114000010633441254, guid: 0a5bce63110dd444389420339562eb6d,
+  initiatorPrefab: {fileID: 114000010802540998, guid: d0af0f0838abf4e59acec666d973311a,
     type: 2}
   swapperPrefab: {fileID: 114000010853859678, guid: 2c8bbb6ecbc7547f486c7f53338e12ba,
     type: 2}
-  terminatorPrefab: {fileID: 114000010550741444, guid: 6676339a0a67444f3a0fb65cc09ce710,
+  terminatorPrefab: {fileID: 114000012012441818, guid: 3527994ca965f41b68aa2a3a4ae63b53,
     type: 2}
-  connectorOneOutputPrefab: {fileID: 114000010016086220, guid: 7d0d193d03ea345bcb66d5aba86e7fb3,
+  connectorOneOutputPrefab: {fileID: 114000012357331906, guid: 0558816e31e20472c800eb1c094233b6,
     type: 2}
-  connectorTwoOutputPrefab: {fileID: 114000010733484010, guid: d4ec76f3ab7f94b1eabf988bf5238f8a,
+  connectorTwoOutputPrefab: {fileID: 114000012734630852, guid: 68175cde5047e478fbad2d99bbf3b8a2,
     type: 2}
   playerPrefab: {fileID: 114000013474580616, guid: 7fc1fcec419254635a00bf834daf2e39,
     type: 2}
@@ -429,7 +429,7 @@ RectTransform:
   - {fileID: 399102623}
   - {fileID: 541565568}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -529,7 +529,7 @@ Transform:
   - {fileID: 547416117}
   - {fileID: 2057326508}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
 --- !u!114 &1209156196
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,6 +544,48 @@ MonoBehaviour:
   model: {fileID: 91477094}
   view: {fileID: 547416116}
   controller: {fileID: 2057326507}
+--- !u!1001 &1551406979
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4000014010187418, guid: 68175cde5047e478fbad2d99bbf3b8a2, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -6.453907
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000014010187418, guid: 68175cde5047e478fbad2d99bbf3b8a2, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -1.4874904
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000014010187418, guid: 68175cde5047e478fbad2d99bbf3b8a2, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000014010187418, guid: 68175cde5047e478fbad2d99bbf3b8a2, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000014010187418, guid: 68175cde5047e478fbad2d99bbf3b8a2, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000014010187418, guid: 68175cde5047e478fbad2d99bbf3b8a2, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000014010187418, guid: 68175cde5047e478fbad2d99bbf3b8a2, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000014010187418, guid: 68175cde5047e478fbad2d99bbf3b8a2, type: 2}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 68175cde5047e478fbad2d99bbf3b8a2, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1747373558
 GameObject:
   m_ObjectHideFlags: 0
@@ -605,7 +647,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
 --- !u!1 &1897955502
 GameObject:
   m_ObjectHideFlags: 0
@@ -741,7 +783,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.86764705, g: 0.28616515, b: 0.11483564, a: 0}
+  m_BackGroundColor: {r: 0.805, g: 0, b: 0, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -778,7 +820,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
 --- !u!1 &2057326506
 GameObject:
   m_ObjectHideFlags: 0

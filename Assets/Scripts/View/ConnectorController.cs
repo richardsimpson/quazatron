@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConnectorController : AbstractBoardObjectController {
+public class ConnectorController : AbstractWireController {
     
-    private List<SpriteRenderer> wireRenderers = new List<SpriteRenderer>();
     private SpriteRenderer connectorRenderer = null;
 
     // Use this for initialization
-    void Start () {
+    public override void Start () {
+        base.Start();
+
         SpriteRenderer[] comps = GetComponentsInChildren<SpriteRenderer>();
 
         for (int i = 0 ; i < comps.Length ; i++) {
-            if (comps[i].sprite.name == "Wire") {
-                wireRenderers.Add(comps[i]);
-            }
-            else if (comps[i].sprite.name == "Connector") {
+            if (comps[i].sprite.name == "Connector") {
                 connectorRenderer = comps[i];
             }
         }
@@ -29,22 +27,6 @@ public class ConnectorController : AbstractBoardObjectController {
         }
         else {
             connectorRenderer.color = BLUE;
-        }
-        }
-
-    public override void onActivated(PlayerNumber playerNumber)
-    {
-        base.onActivated(playerNumber);
-        Color newColour = getColourForPlayerNumber(playerNumber);
-        for (int i = 0 ; i < wireRenderers.Count ; i++) {
-            wireRenderers[i].color = newColour;
-        }
-    }
-
-    public override void onDeactivated()
-    {
-        for (int i = 0 ; i < wireRenderers.Count ; i++) {
-            wireRenderers[i].color = BLACK;
         }
     }
 

@@ -85,7 +85,8 @@ public class View : MonoBehaviour
     private void constructTargetSummary() {
         // Initially, the target summary should be black
         this.targetSummary = Instantiate(targetSummaryPrefab);
-        float posY = INITIAL_Y + this.targets[0].transform.localScale.y/2 + this.targetSummary.transform.localScale.y/2 + 0.10f; //0.10f = Y_INCREMENT - height of targetPrefab
+        float gapBetweenTargets = Y_INCREMENT - this.targets[0].transform.localScale.y;
+        float posY = INITIAL_Y + this.targets[0].transform.localScale.y/2 + this.targetSummary.transform.localScale.y/2 + gapBetweenTargets;
         this.targetSummary.transform.position = new Vector3(0, posY, 0);
     }
 

@@ -14,6 +14,10 @@ public class AbstractWireController : AbstractBoardObjectController {
     private PlayerNumber activePlayerNumber;
     private float currentOffset = 0.0f;
 
+    private float period = 0.0125f;
+
+    private float nextActionTime = 0.0f;
+
     // Use this for initialization
     public virtual void Start () {
         MeshRenderer[] comps = GetComponentsInChildren<MeshRenderer>();
@@ -23,16 +27,19 @@ public class AbstractWireController : AbstractBoardObjectController {
         }
     }
 
-    // Update is called once per frame
-    void Update () {
+    void FixedUpdate () {
         if (isActivated()) {
-            currentOffset = currentOffset + 0.05f;
-            if (currentOffset >= 1.0f) {
-                currentOffset = 0.0f;
-            }
+            if (Time.time > nextActionTime) {
+                nextActionTime = Time.time + period;
 
-            for (int i = 0 ; i < this.meshRenderers.Count ; i++) {
-                this.meshRenderers[i].material.SetTextureOffset("_MainTex", new Vector2(currentOffset, 0.0f));
+                currentOffset = currentOffset + 0.025f;
+                if (currentOffset >= 1.0f) {
+                    currentOffset = 0.0f;
+                }
+
+                for (int i = 0 ; i < this.meshRenderers.Count ; i++) {
+                    this.meshRenderers[i].material.SetTextureOffset("_MainTex", new Vector2(currentOffset, 0.0f));
+                }
             }
         }
     }

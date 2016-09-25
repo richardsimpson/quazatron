@@ -19,7 +19,6 @@ public class TargetController : AbstractBoardObjectController {
         nextActionTime = Time.time;
 	}
 	
-	// Update is called once per frame
 	void FixedUpdate () {
         if (controlDisputed) {
             if (Time.time > nextActionTime) {

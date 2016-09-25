@@ -9,7 +9,7 @@ public class AbstractBoardObjectController : MonoBehaviour
     protected Color BLACK = new Color(0F, 0F, 0F);
 
     // This is the player that 'owns' the component.  This does NOT change.
-    protected PlayerNumber playerNumber;
+    protected PlayerNumber owner;
 
     private bool activated = false;
 
@@ -17,8 +17,8 @@ public class AbstractBoardObjectController : MonoBehaviour
 
     }
 
-    public void setPlayerNumber(PlayerNumber playerNumber) {
-        this.playerNumber = playerNumber;
+    public void setOwner(PlayerNumber owner) {
+        this.owner = owner;
     }
 
     public virtual void onActivated(PlayerNumber playerNumber) {

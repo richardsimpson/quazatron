@@ -27,7 +27,7 @@ public class SwapperController : AbstractBoardObjectController {
             throw new Exception("Cannot locate swapper component");
         }
 
-        if (playerNumber == PlayerNumber.PLAYER1) {
+        if (owner == PlayerNumber.PLAYER1) {
             swapperRenderer.color = BLUE;
         }
         else {

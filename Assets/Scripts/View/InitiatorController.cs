@@ -21,7 +21,7 @@ public class InitiatorController : AbstractWireController {
             throw new Exception("Cannot locate initiator component");
         }
 
-        if (playerNumber == PlayerNumber.PLAYER1) {
+        if (owner == PlayerNumber.PLAYER1) {
             initiatorRenderer.color = YELLOW;
         }
         else {

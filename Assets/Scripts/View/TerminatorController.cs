@@ -21,7 +21,7 @@ public class TerminatorController : AbstractWireController {
             throw new Exception("Cannot locate terminator component");
         }
 
-        if (playerNumber == PlayerNumber.PLAYER1) {
+        if (owner == PlayerNumber.PLAYER1) {
             terminatorRenderer.color = YELLOW;
         }
         else {

@@ -8,7 +8,7 @@ public class AbstractWireController : AbstractBoardObjectController {
     public Material blackWire;
 
     private List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
-    protected PlayerNumber activePlayerNumber;
+    private PlayerNumber activePlayerNumber;
     private float currentOffset = 0.0f;
 
     // Use this for initialization
@@ -36,6 +36,11 @@ public class AbstractWireController : AbstractBoardObjectController {
 
     public override void onActivated(PlayerNumber playerNumber)
     {
+        // playerNumber indicates the colour (PLAYER1 = YELLOW, PLAYER2 = BLUE)
+        // the inherited 'owner' indicates the side of the board (PLAYER1 = left, PLAYER2 = right)
+        //
+        // with this information, we can determine which material to use, to display the 'flow' on the wire.
+
         base.onActivated(playerNumber);
 
         this.activePlayerNumber = playerNumber;

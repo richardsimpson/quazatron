@@ -125,7 +125,7 @@ public class View : MonoBehaviour
 
         WireController result = Instantiate(wirePrefab);
 
-        result.setPlayerNumber(playerNumber);
+        result.setOwner(playerNumber);
         result.transform.position = new Vector3(computeXPos(column, playerNumber), yPos, 0);
         result.transform.Rotate(computeRotation(playerNumber));
         return result;
@@ -136,7 +136,7 @@ public class View : MonoBehaviour
 
         InitiatorController result = Instantiate(initiatorPrefab);
 
-        result.setPlayerNumber(playerNumber);
+        result.setOwner(playerNumber);
         result.transform.position = new Vector3(computeXPos(column, playerNumber), yPos, 0);
         result.transform.Rotate(computeRotation(playerNumber));
         return result;
@@ -147,7 +147,7 @@ public class View : MonoBehaviour
 
         SwapperController result = Instantiate(swapperPrefab);
 
-        result.setPlayerNumber(playerNumber);
+        result.setOwner(playerNumber);
         result.transform.position = new Vector3(computeXPos(column, playerNumber), yPos, 0);
         result.transform.Rotate(computeRotation(playerNumber));
         return result;
@@ -158,7 +158,7 @@ public class View : MonoBehaviour
 
         TerminatorController result = Instantiate(terminatorPrefab);
 
-        result.setPlayerNumber(playerNumber);
+        result.setOwner(playerNumber);
         result.transform.position = new Vector3(computeXPos(column, playerNumber), yPos, 0);
         result.transform.Rotate(computeRotation(playerNumber));
         return result;
@@ -178,7 +178,7 @@ public class View : MonoBehaviour
             throw new Exception("Invalid number of outputs for Connector");
         }
 
-        result.setPlayerNumber(playerNumber);
+        result.setOwner(playerNumber);
         result.transform.position = new Vector3(computeXPos(column, playerNumber), yPos, 0);
         result.transform.Rotate(computeRotation(playerNumber));
         return result;

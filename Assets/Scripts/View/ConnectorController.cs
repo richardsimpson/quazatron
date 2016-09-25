@@ -22,7 +22,7 @@ public class ConnectorController : AbstractWireController {
             throw new Exception("Cannot locate connector component");
         }
 
-        if (playerNumber == PlayerNumber.PLAYER1) {
+        if (owner == PlayerNumber.PLAYER1) {
             connectorRenderer.color = YELLOW;
         }
         else {

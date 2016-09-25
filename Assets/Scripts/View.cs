@@ -6,9 +6,6 @@ using UnityEngine.UI;
 // extends MonoBehaviour so that we can wire it into the Application object in Unity
 public class View : MonoBehaviour
 {
-    private const float INITIAL_Y = 3f;
-    private const float Y_INCREMENT = 0.60f;
-
     private const float PLAYER_1_LIVES_X = -8f;
     private const float PLAYER_2_LIVES_X = 8f;
     private const float LIVES_INITIAL_Y = 4f;
@@ -85,14 +82,14 @@ public class View : MonoBehaviour
     private void constructTargetSummary() {
         // Initially, the target summary should be black
         this.targetSummary = Instantiate(targetSummaryPrefab);
-        float gapBetweenTargets = Y_INCREMENT - this.targets[0].transform.localScale.y;
-        float posY = INITIAL_Y + this.targets[0].transform.localScale.y/2 + this.targetSummary.transform.localScale.y/2 + gapBetweenTargets;
+        float gapBetweenTargets = ViewConstants.Y_INCREMENT - this.targets[0].transform.localScale.y;
+        float posY = ViewConstants.INITIAL_Y + this.targets[0].transform.localScale.y/2 + this.targetSummary.transform.localScale.y/2 + gapBetweenTargets*2;
         this.targetSummary.transform.position = new Vector3(0, posY, 0);
     }
 
     private void constructTargetViews() {
         // TODO: Initially, the targets should alternate between yellow and blue
-        float yPos = INITIAL_Y;
+        float yPos = ViewConstants.INITIAL_Y;
 
         for (int index = 0 ; index < ROW_COUNT ; index++) {
             TargetController newTarget = Instantiate(targetPrefab);
@@ -100,7 +97,7 @@ public class View : MonoBehaviour
 
             this.targets.Add(newTarget);
 
-            yPos = yPos - Y_INCREMENT;
+            yPos = yPos - ViewConstants.Y_INCREMENT;
         }
     }
 
@@ -122,7 +119,7 @@ public class View : MonoBehaviour
 
     // TODO: See if these methods can be collapsed into a single one
     private WireController constructWire(int column, int row, PlayerNumber playerNumber) {
-        float yPos = INITIAL_Y - (row * Y_INCREMENT);
+        float yPos = ViewConstants.INITIAL_Y - (row * ViewConstants.Y_INCREMENT);
 
         WireController result = Instantiate(wirePrefab);
 
@@ -133,7 +130,7 @@ public class View : MonoBehaviour
     }
 
     private InitiatorController constructInitiator(int column, int row, PlayerNumber playerNumber) {
-        float yPos = INITIAL_Y - (row * Y_INCREMENT);
+        float yPos = ViewConstants.INITIAL_Y - (row * ViewConstants.Y_INCREMENT);
 
         InitiatorController result = Instantiate(initiatorPrefab);
 
@@ -144,7 +141,7 @@ public class View : MonoBehaviour
     }
 
     private SwapperController constructSwapper(int column, int row, PlayerNumber playerNumber) {
-        float yPos = INITIAL_Y - (row * Y_INCREMENT);
+        float yPos = ViewConstants.INITIAL_Y - (row * ViewConstants.Y_INCREMENT);
 
         SwapperController result = Instantiate(swapperPrefab);
 
@@ -155,7 +152,7 @@ public class View : MonoBehaviour
     }
 
     private TerminatorController constructTerminator(int column, int row, PlayerNumber playerNumber) {
-        float yPos = INITIAL_Y - (row * Y_INCREMENT);
+        float yPos = ViewConstants.INITIAL_Y - (row * ViewConstants.Y_INCREMENT);
 
         TerminatorController result = Instantiate(terminatorPrefab);
 
@@ -166,7 +163,7 @@ public class View : MonoBehaviour
     }
 
     private ConnectorController constructConnector(Connector modelInput, int column, int row, PlayerNumber playerNumber) {
-        float yPos = INITIAL_Y - (row * Y_INCREMENT);
+        float yPos = ViewConstants.INITIAL_Y - (row * ViewConstants.Y_INCREMENT);
 
         ConnectorController result;
         if (modelInput.getOutputs().Count == 1) {

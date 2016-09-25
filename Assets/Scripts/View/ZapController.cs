@@ -20,10 +20,8 @@ public class ZapController : MonoBehaviour
     public event PlayerMoveRequestedEventHandler playerMoveRequested;
     public event FirePressedEventHandler firePressed;
 
-    private const float INITIAL_Y = 3f;
     // initial z is -1, so we are guaranteed that the player icons appear in fron of all other components
     private const float INITIAL_Z = -1.0f;
-    private const float MOVE_BY_Y = 0.60f;
 
     protected int playerPosition = 0;
 
@@ -33,7 +31,7 @@ public class ZapController : MonoBehaviour
 
     public virtual void reset()
     {
-        transform.position = new Vector3(getInitialX(), INITIAL_Y, INITIAL_Z);
+        transform.position = new Vector3(getInitialX(), ViewConstants.INITIAL_Y, INITIAL_Z);
     }
 
     // Use this for initialization
@@ -56,7 +54,7 @@ public class ZapController : MonoBehaviour
     public void onPlayerMoved(int position)
     {
         this.playerPosition = position;
-        transform.position = new Vector3(getInitialX(), INITIAL_Y - (MOVE_BY_Y*position));
+        transform.position = new Vector3(getInitialX(), ViewConstants.INITIAL_Y - (ViewConstants.Y_INCREMENT*position));
     }
 
     public int getPlayerPosition() {

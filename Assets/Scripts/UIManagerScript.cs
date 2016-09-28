@@ -8,4 +8,9 @@ public class UIManagerScript : MonoBehaviour {
         SceneManager.LoadScene("minigame");
     }
 
+    void Update() {
+        if (Input.GetKey(KeyCode.Space)) {
+            SceneManager.LoadScene("minigame");
+        }
+    }
 }

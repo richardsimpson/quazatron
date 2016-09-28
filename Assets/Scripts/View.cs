@@ -23,7 +23,7 @@ public class View : MonoBehaviour
     public PlayerController playerPrefab;
     public EnemyController enemyPrefab;
     public TimeLeftController timeLeftText;
-    public Text gameOverText;
+    public WinLoseController winLoseController;
 
     private List<TargetController> targets = new List<TargetController>();
     private TargetSummaryController targetSummary;
@@ -63,20 +63,7 @@ public class View : MonoBehaviour
     private void onGameOver(TimeLeftController sender, EventArgs e)
     {
         PlayerNumber winner = this.targetSummary.getWinner();
-
-        this.gameOverText.text = "Game Over.\n";
-        if (PlayerNumber.PLAYER1 == winner) {
-            this.gameOverText.text = this.gameOverText.text + "You Win!";
-        }
-        else if (PlayerNumber.PLAYER2 == winner) {
-            this.gameOverText.text = this.gameOverText.text + "You Lose!";
-        }
-        else {
-            this.gameOverText.text = this.gameOverText.text + "Draw!";
-        }
-
-        this.gameOverText.gameObject.SetActive(true);
-        Time.timeScale = 0;
+        this.winLoseController.activate(winner);
     }
 
     private void constructTargetSummary() {

@@ -49,11 +49,14 @@ public class GameBoard
             this.targets.Add(target);
         }
 
+        // TODO: See what to do if a connector has two different coloured inputs.
+        // TODO: Make the generated board more playable.
+
         createBoard(this.player1Board);
         createBoard(this.player2Board);
 	}
 
-    private void createBoard(AbstractBoardObject[,] board) {
+    private void createExampleBoard(AbstractBoardObject[,] board) {
         // setup this board:
         //        1      2      3
         //
@@ -114,6 +117,167 @@ public class GameBoard
         board[0, 11] = new Wire(board[1, 11]);
     }
 
+    private enum ObjectType {
+        None, Terminator, Wire, Swapper, Initiator, Connector2To1, Connector1To2
+    }
+
+    private System.Random random = new System.Random();
+
+    private AbstractBoardObject getOutput(int column, int row, AbstractBoardObject[,] board, ObjectType[,] tempBoard) {
+        if (column==2) {
+            return this.targets[row];
+        }
+        else if (board[column+1, row] != null) {
+            return board[column+1, row];
+        }
+        else if ((row > 0) && (board[column+1, row-1] is Connector)) {
+            return board[column+1, row-1];
+        }
+        else if ((row < ROW_COUNT-1) && (board[column+1, row+1] is Connector)) {
+            return board[column+1, row+1];
+        }
+        else {
+            throw new Exception("Cannot locate output for object " + tempBoard[column, row]);
+        }
+    }
+
+    private List<AbstractBoardObject> getOutputsForConnector1To2(int column, int row, AbstractBoardObject[,] board, ObjectType[,] tempBoard) {
+        List<AbstractBoardObject> outputs = new List<AbstractBoardObject>();
+        if (column==2) {
+            outputs.Add(this.targets[row-1]);
+            outputs.Add(this.targets[row+1]);
+        }
+        else {
+            outputs.Add(getOutput(column, row-1, board, tempBoard));
+            outputs.Add(getOutput(column, row+1, board, tempBoard));
+        }
+
+        return outputs;
+    }
+
+    private void createBoard(AbstractBoardObject[,] board) {
+        ObjectType[,] tempBoard = new ObjectType[board.GetLength(0), board.GetLength(1)];
+
+        // populate the grid
+        for (int i = 0 ; i <= 2 ; i++) {
+            for (int j = 0 ; j < ROW_COUNT ; j++) {
+                if (i == 0) {
+                    tempBoard[i,j] = selectFirstColumnObject();
+                }
+                else {
+                    tempBoard[i,j] = selectObject(tempBoard, i, j); 
+                    if ((tempBoard[i,j] == ObjectType.Connector1To2) || (tempBoard[i,j] == ObjectType.Connector2To1)) {
+                        tempBoard[i,j+1] = ObjectType.None;
+                    }
+                }
+            }
+        }
+
+        // now convert the tempBoard to a real board
+        for (int i = 2 ; i >= 0 ; i--) {
+            for (int j = 0 ; j < ROW_COUNT ; j++) {
+                switch(tempBoard[i,j]) {
+                case ObjectType.None:
+                    board[i,j] = null;
+                    break;
+                case ObjectType.Terminator:
+                    board[i,j] = new Terminator();
+                    break;
+                case ObjectType.Wire:
+                    // what about wires that are to the left of nulls (due to connectors)
+                    board[i,j] = new Wire(getOutput(i, j, board, tempBoard));
+                    break;
+                case ObjectType.Swapper:
+                    board[i,j] = new Swapper(getOutput(i, j, board, tempBoard));
+                    break;
+                case ObjectType.Initiator:
+                    board[i,j] = new Initiator(getOutput(i, j, board, tempBoard));
+                    break;
+                case ObjectType.Connector2To1:
+                    board[i,j] = new Connector(getOutput(i, j, board, tempBoard));
+                    break;
+                case ObjectType.Connector1To2:
+                    board[i,j] = new Connector(getOutputsForConnector1To2(i, j, board, tempBoard));
+                    break;
+                }
+            }
+        }
+    }
+
+    private ObjectType selectFirstColumnObject() {
+        int index = this.random.Next(0, 2);
+
+        if (index == 0) {
+            return ObjectType.Wire;
+        }
+
+        return ObjectType.Terminator;
+    }
+
+    private bool objectHasWireOutputOnSameRow(ObjectType objectType) {
+        return (ObjectType.Wire == objectType) || (ObjectType.Swapper == objectType) 
+            || (ObjectType.Initiator == objectType) || (ObjectType.Connector2To1 == objectType);
+    }
+
+    private ObjectType selectObject(ObjectType[,] board, int column, int row) {
+        List<ObjectType> possibleObjects = new List<ObjectType>();
+
+        if ((row > 0) && ((board[column, row-1] == ObjectType.Connector1To2) || (board[column, row-1] == ObjectType.Connector2To1))) {
+            return ObjectType.None;
+        }
+
+        // see if this HAS to be a 2 to 1 connector
+        if ((row > 0) && (row < ROW_COUNT-1) && (objectHasWireOutputOnSameRow(board[column-1, row-1])) 
+            && (board[column, row-1] == ObjectType.None)) {
+            if (row == 1) {
+                return ObjectType.Connector2To1;
+            }
+            else if ((board[column, row-2] != ObjectType.Connector1To2) && (board[column, row-2] != ObjectType.Connector2To1)) {
+                return ObjectType.Connector2To1;
+            }
+        }
+
+        if ((objectHasWireOutputOnSameRow(board[column-1, row])) 
+            || (row > 0 && board[column-1, row-1] == ObjectType.Connector1To2) 
+            || (row < ROW_COUNT-1 && board[column-1, row+1] == ObjectType.Connector1To2)) {
+            possibleObjects.Add(ObjectType.Wire);
+            possibleObjects.Add(ObjectType.Terminator);
+            possibleObjects.Add(ObjectType.Swapper);
+            possibleObjects.Add(ObjectType.Initiator);
+
+            // see if this can be null, with a 2 to 1 connector in the row below
+            if ((row < ROW_COUNT-2) && (!objectHasWireOutputOnSameRow(board[column-1, row+1])) && (objectHasWireOutputOnSameRow(board[column-1, row+2]))) {
+                possibleObjects.Add(ObjectType.None);
+
+            }
+
+//            // see if this can be a 1 to 2 connector
+//            else if ((row > 0) && (row < ROW_COUNT-1) && (!objectHasWireOutputOnSameRow(board[column-1, row-1])) 
+//                && (!objectHasWireOutputOnSameRow(board[column-1, row+1])) && (board[column, row-1] == ObjectType.None)) {
+//
+//                possibleObjects.Add(ObjectType.Connector1To2);
+//            }
+        }
+        else {
+            possibleObjects.Add(ObjectType.None);
+
+            if ((row > 0) && (row < ROW_COUNT-1) 
+                && (objectHasWireOutputOnSameRow(board[column-1, row-1])) && (objectHasWireOutputOnSameRow(board[column-1, row+1]))
+                && (board[column, row-1] == ObjectType.None)) {
+
+                // make sure we don't have a connector too near another
+                if (row < 2) {
+                    possibleObjects.Add(ObjectType.Connector2To1);
+                }
+                else if ((board[column, row-2] != ObjectType.Connector1To2) && (board[column, row-2] != ObjectType.Connector2To1)) {
+                    possibleObjects.Add(ObjectType.Connector2To1);
+                }
+            }
+        }
+
+        return possibleObjects[this.random.Next(0, possibleObjects.Count)];
+    }
+            
     public List<Target> getTargets() {
         return this.targets;
     }

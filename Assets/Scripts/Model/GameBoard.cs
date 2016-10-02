@@ -49,9 +49,6 @@ public class GameBoard
             this.targets.Add(target);
         }
 
-        // TODO: See what to do if a connector has two different coloured inputs.
-        // TODO: Make the generated board more playable.
-        // TODO: Two swappers in a row swaps back to the original color.  It should't.
         // TODO: Initiators are running out at the same time as the player zap
         // TODO: If player 2 cannot go, then they never go again, even when a wire becomes available.
 
@@ -165,7 +162,7 @@ public class GameBoard
         for (int i = 0 ; i <= 2 ; i++) {
             for (int j = 0 ; j < ROW_COUNT ; j++) {
                 if (i == 0) {
-                    tempBoard[i,j] = selectFirstColumnObject();
+                    tempBoard[i,j] = selectFirstColumnObject(tempBoard, i, j);
                 }
                 else {
                     tempBoard[i,j] = selectObject(tempBoard, i, j); 
@@ -207,7 +204,12 @@ public class GameBoard
         }
     }
 
-    private ObjectType selectFirstColumnObject() {
+    private ObjectType selectFirstColumnObject(ObjectType[,] board, int column, int row) {
+        // Don't allow two terminators together
+        if ((row > 0) && (board[column, row-1] == ObjectType.Terminator)) {
+            return ObjectType.Wire;
+        }
+        
         int index = this.random.Next(0, 2);
 
         if (index == 0) {
@@ -243,9 +245,16 @@ public class GameBoard
         if ((objectHasWireOutputOnSameRow(board[column-1, row])) 
             || (row > 0 && board[column-1, row-1] == ObjectType.Connector1To2) 
             || (row < ROW_COUNT-1 && board[column-1, row+1] == ObjectType.Connector1To2)) {
-            possibleObjects.Add(ObjectType.Wire);
+
+            // Don't allow two terminators together
+            if ((row > 0) && (board[column, row-1] == ObjectType.Terminator)) {
+                possibleObjects.Add(ObjectType.Wire);
+            }
+            // only allow swappers in the last column (to avoid having two on one row, and to avoid having connectors with different coloured inputs.
+            if (column == 2) {
+                possibleObjects.Add(ObjectType.Swapper);
+            }
             possibleObjects.Add(ObjectType.Terminator);
-            possibleObjects.Add(ObjectType.Swapper);
             possibleObjects.Add(ObjectType.Initiator);
 
             // see if this can be null, with a 2 to 1 connector in the row below

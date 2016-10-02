@@ -51,6 +51,9 @@ public class GameBoard
 
         // TODO: See what to do if a connector has two different coloured inputs.
         // TODO: Make the generated board more playable.
+        // TODO: Two swappers in a row swaps back to the original color.  It should't.
+        // TODO: Initiators are running out at the same time as the player zap
+        // TODO: If player 2 cannot go, then they never go again, even when a wire becomes available.
 
         createBoard(this.player1Board);
         createBoard(this.player2Board);
@@ -246,17 +249,26 @@ public class GameBoard
             possibleObjects.Add(ObjectType.Initiator);
 
             // see if this can be null, with a 2 to 1 connector in the row below
-            if ((row < ROW_COUNT-2) && (!objectHasWireOutputOnSameRow(board[column-1, row+1])) && (objectHasWireOutputOnSameRow(board[column-1, row+2]))) {
-                possibleObjects.Add(ObjectType.None);
+            if (objectHasWireOutputOnSameRow(board[column-1, row])) {
+                if ((row < ROW_COUNT-2) && (!objectHasWireOutputOnSameRow(board[column-1, row+1])) && (objectHasWireOutputOnSameRow(board[column-1, row+2]))) {
+                    possibleObjects.Add(ObjectType.None);
 
+                }
             }
 
-//            // see if this can be a 1 to 2 connector
-//            else if ((row > 0) && (row < ROW_COUNT-1) && (!objectHasWireOutputOnSameRow(board[column-1, row-1])) 
-//                && (!objectHasWireOutputOnSameRow(board[column-1, row+1])) && (board[column, row-1] == ObjectType.None)) {
-//
-//                possibleObjects.Add(ObjectType.Connector1To2);
-//            }
+            // see if this can be a 1 to 2 connector
+            if ((row > 0) && (row < ROW_COUNT-1) && (!objectHasWireOutputOnSameRow(board[column-1, row-1])) 
+                && (!objectHasWireOutputOnSameRow(board[column-1, row+1])) && (board[column, row-1] == ObjectType.None)) {
+
+                if ((row == 1) || (row == ROW_COUNT-2)) {
+                    possibleObjects.Add(ObjectType.Connector1To2);
+                }
+                else if ((board[column, row-2] != ObjectType.Connector1To2) && (board[column, row-2] != ObjectType.Connector2To1)
+                    && (board[column-1, row-2] != ObjectType.Connector1To2) && (board[column-1, row+2] != ObjectType.Connector1To2)) {
+                    
+                    possibleObjects.Add(ObjectType.Connector1To2);
+                }
+            }
         }
         else {
             possibleObjects.Add(ObjectType.None);

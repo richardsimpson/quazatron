@@ -36,6 +36,7 @@ public class GameBoard
     public event TargetSummaryUpdatedEventHandler targetSummaryUpdated;
 
     private const int ROW_COUNT = 12;
+    private const int MAX_TERMINATOR_COUNT = 6;
 
     private List<Target> targets = new List<Target>();
     private AbstractBoardObject[,] player1Board = new AbstractBoardObject[3,ROW_COUNT];
@@ -157,15 +158,26 @@ public class GameBoard
 
     private void createBoard(AbstractBoardObject[,] board) {
         ObjectType[,] tempBoard = new ObjectType[board.GetLength(0), board.GetLength(1)];
+        int numberOfTerminators = 0;
 
         // populate the grid
         for (int i = 0 ; i <= 2 ; i++) {
             for (int j = 0 ; j < ROW_COUNT ; j++) {
                 if (i == 0) {
-                    tempBoard[i,j] = selectFirstColumnObject(tempBoard, i, j);
+                    ObjectType newObject = selectFirstColumnObject(tempBoard, i, j, numberOfTerminators);
+                    if (ObjectType.Terminator == newObject) {
+                        numberOfTerminators++;
+                    }
+                    tempBoard[i,j] = newObject;
+
                 }
                 else {
-                    tempBoard[i,j] = selectObject(tempBoard, i, j); 
+                    ObjectType newObject = selectObject(tempBoard, i, j, numberOfTerminators);
+                    if (ObjectType.Terminator == newObject) {
+                        numberOfTerminators++;
+                    }
+                    tempBoard[i,j] = newObject;
+
                     if ((tempBoard[i,j] == ObjectType.Connector1To2) || (tempBoard[i,j] == ObjectType.Connector2To1)) {
                         tempBoard[i,j+1] = ObjectType.None;
                     }
@@ -184,7 +196,6 @@ public class GameBoard
                     board[i,j] = new Terminator();
                     break;
                 case ObjectType.Wire:
-                    // what about wires that are to the left of nulls (due to connectors)
                     board[i,j] = new Wire(getOutput(i, j, board, tempBoard));
                     break;
                 case ObjectType.Swapper:
@@ -204,19 +215,24 @@ public class GameBoard
         }
     }
 
-    private ObjectType selectFirstColumnObject(ObjectType[,] board, int column, int row) {
+    private ObjectType selectFirstColumnObject(ObjectType[,] board, int column, int row, int currentNumberOfTerminators) {
+        if (currentNumberOfTerminators >= MAX_TERMINATOR_COUNT) {
+            return ObjectType.Wire;
+        }
+
         // Don't allow two terminators together
         if ((row > 0) && (board[column, row-1] == ObjectType.Terminator)) {
             return ObjectType.Wire;
         }
-        
-        int index = this.random.Next(0, 2);
+
+        // twice as much chance of getting a Wire than a Terminator
+        int index = this.random.Next(0, 3);
 
         if (index == 0) {
-            return ObjectType.Wire;
+            return ObjectType.Terminator;
         }
 
-        return ObjectType.Terminator;
+        return ObjectType.Wire;
     }
 
     private bool objectHasWireOutputOnSameRow(ObjectType objectType) {
@@ -224,7 +240,7 @@ public class GameBoard
             || (ObjectType.Initiator == objectType) || (ObjectType.Connector2To1 == objectType);
     }
 
-    private ObjectType selectObject(ObjectType[,] board, int column, int row) {
+    private ObjectType selectObject(ObjectType[,] board, int column, int row, int currentNumberOfTerminators) {
         List<ObjectType> possibleObjects = new List<ObjectType>();
 
         if ((row > 0) && ((board[column, row-1] == ObjectType.Connector1To2) || (board[column, row-1] == ObjectType.Connector2To1))) {
@@ -246,15 +262,20 @@ public class GameBoard
             || (row > 0 && board[column-1, row-1] == ObjectType.Connector1To2) 
             || (row < ROW_COUNT-1 && board[column-1, row+1] == ObjectType.Connector1To2)) {
 
+            // Add Wire twice, so it has a higher chance of being selected
+            possibleObjects.Add(ObjectType.Wire);
+            possibleObjects.Add(ObjectType.Wire);
+
             // Don't allow two terminators together
-            if ((row > 0) && (board[column, row-1] == ObjectType.Terminator)) {
-                possibleObjects.Add(ObjectType.Wire);
+            if ((row > 0) && (board[column, row-1] != ObjectType.Terminator)) {
+                if (currentNumberOfTerminators < MAX_TERMINATOR_COUNT) {
+                    possibleObjects.Add(ObjectType.Terminator);
+                }
             }
             // only allow swappers in the last column (to avoid having two on one row, and to avoid having connectors with different coloured inputs.
             if (column == 2) {
                 possibleObjects.Add(ObjectType.Swapper);
             }
-            possibleObjects.Add(ObjectType.Terminator);
             possibleObjects.Add(ObjectType.Initiator);
 
             // see if this can be null, with a 2 to 1 connector in the row below

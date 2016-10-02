@@ -67,8 +67,8 @@ public class EnemyController : ZapController
 
             // if still don't know one, there must be no valid input right now.  wait for a while
             if (this.currentInputRow == -1) {
-                // wait 5 seconds, for some zaps to expire
-                nextActionTime = nextActionTime + 5;
+                // wait 2 seconds, for some zaps to expire
+                nextActionTime = nextActionTime + 2;
             }
             else {
                 if (this.playerPosition > this.currentInputRow) {

@@ -50,9 +50,6 @@ public class GameBoard
             this.targets.Add(target);
         }
 
-        // TODO: Initiators are running out at the same time as the player zap
-        // TODO: If player 2 cannot go, then they never go again, even when a wire becomes available.
-
         createBoard(this.player1Board);
         createBoard(this.player2Board);
 	}

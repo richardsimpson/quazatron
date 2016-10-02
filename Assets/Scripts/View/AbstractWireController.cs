@@ -88,6 +88,8 @@ public class AbstractWireController : AbstractBoardObjectController {
 
     public override void onDeactivated()
     {
+        base.onDeactivated();
+
         for (int i = 0 ; i < this.meshRenderers.Count ; i++) {
             this.meshRenderers[i].material = blackWire;
         }

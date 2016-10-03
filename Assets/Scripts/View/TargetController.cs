@@ -24,7 +24,7 @@ public class TargetController : AbstractBoardObjectController {
             if (Time.time > nextActionTime) {
                 nextActionTime = Time.time + period;
 
-                // TODO: Alternate between yellow, blue and black.
+                // Alternate between yellow, blue and black.
                 if (targetRenderer.color == YELLOW) {
                     targetRenderer.color = BLUE;
                 }

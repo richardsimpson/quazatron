@@ -384,10 +384,5 @@ public class GameBoard
         recalculateTargetSummaryState();
     }
 
-    // TODO: Is this used?
-    private void onTargetDeactivatedStateChanged(BoardObject sender, EventArgs e) {
-        recalculateTargetSummaryState();
-    }
-
 }
 

@@ -147,7 +147,7 @@ public class Model : MonoBehaviour
 
         this.oldPlayers[playerNumber].Remove(oldPlayer.getPlayerPosition());
 
-        // TODO: stop onPlayerRemoved from deactivating beyong Initiators (they will need their own Co-routine
+        // TODO: stop onPlayerRemoved from deactivating beyond Initiators (they will need their own Co-routine
 
         // onPlayerRemoved will start deactivating inputs
         this.gameBoard.onPlayerRemoved(playerNumber, oldPlayer.getPlayerPosition());

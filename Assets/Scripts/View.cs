@@ -75,7 +75,6 @@ public class View : MonoBehaviour
     }
 
     private void constructTargetViews() {
-        // TODO: Initially, the targets should alternate between yellow and blue
         float yPos = ViewConstants.INITIAL_Y;
 
         for (int index = 0 ; index < ROW_COUNT ; index++) {
@@ -353,8 +352,6 @@ public class View : MonoBehaviour
     }
 
     public void onZapExpired(PlayerNumber playerNumber, int playerPosition) {
-        // TODO: Make this work for both players
-
         // Find the entry in oldPlayers that corresponds to the specified playerPosition, then set it inactive.
         Dictionary<int, ZapController> oldPlayerList = this.oldPlayers[playerNumber];
         oldPlayerList[playerPosition].setActive(false);

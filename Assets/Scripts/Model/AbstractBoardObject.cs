@@ -61,12 +61,12 @@ public abstract class AbstractBoardObject : BoardObject
         }
     }
 
-    public virtual void inputDeactivated(BoardObject input) {
+    public virtual void inputDeactivated(Model model, BoardObject input) {
         this.activated = false;
         OnBoardObjectDeactivated(EventArgs.Empty);
 
         for (int i = 0 ; i < this.outputs.Count ; i++) {
-            outputs[i].inputDeactivated(this);
+            outputs[i].inputDeactivated(model, this);
         }
     }
 

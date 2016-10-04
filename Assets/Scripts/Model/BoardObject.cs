@@ -23,5 +23,7 @@ public interface BoardObject
     List<BoardObject> getOutputs();
 
     void inputActivated(BoardObject input, PlayerNumber playerNumber);
-    void inputDeactivated(BoardObject input);
+
+    // model is only passed in so that the Initiator can use it to call StartCoroutine
+    void inputDeactivated(Model model, BoardObject input);
 }

@@ -147,10 +147,8 @@ public class Model : MonoBehaviour
 
         this.oldPlayers[playerNumber].Remove(oldPlayer.getPlayerPosition());
 
-        // TODO: stop onPlayerRemoved from deactivating beyond Initiators (they will need their own Co-routine
-
         // onPlayerRemoved will start deactivating inputs
-        this.gameBoard.onPlayerRemoved(playerNumber, oldPlayer.getPlayerPosition());
+        this.gameBoard.onPlayerRemoved(this, playerNumber, oldPlayer.getPlayerPosition());
         // zapExpired is listened to by the Controller, so that the View will remove the player object.
         onZapExpired(new ZapExpiredEventArgs(playerNumber, oldPlayer.getPlayerPosition()));
     }

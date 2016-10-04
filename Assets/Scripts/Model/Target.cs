@@ -55,7 +55,7 @@ public class Target : AbstractBoardObject
         fireActiveEventIfNecessary();
     }
 
-    public override void inputDeactivated(BoardObject input) {
+    public override void inputDeactivated(Model model, BoardObject input) {
         activatedInputs.Remove(input);
         fireActiveEventIfNecessary();
     }

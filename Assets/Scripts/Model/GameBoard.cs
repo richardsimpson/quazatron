@@ -343,10 +343,11 @@ public class GameBoard
         board[0, playerPosition].inputActivated(null, playerNumber);
     }
 
-    public void onPlayerRemoved(PlayerNumber playerNumber, int playerPosition)
+    // model is only passed in so that the Initiator can use it to call StartCoroutine
+    public void onPlayerRemoved(Model model, PlayerNumber playerNumber, int playerPosition)
     {
         BoardObject[,] board = getBoardForPlayerNumber(playerNumber);
-        board[0, playerPosition].inputDeactivated(null);
+        board[0, playerPosition].inputDeactivated(model, null);
     }
 
     protected void OnTargetSummaryUpdated(TargetSummaryUpdatedEventArgs eventArgs) {

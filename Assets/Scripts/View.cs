@@ -103,69 +103,43 @@ public class View : MonoBehaviour
         return new Vector3(0, 0, 180);
     }
 
-    // TODO: See if these methods can be collapsed into a single one
-    private WireController constructWire(int column, int row, PlayerNumber playerNumber) {
+    private T constructGameObject<T>(int column, int row, PlayerNumber playerNumber, T prefab) where T:AbstractBoardObjectController {
         float yPos = ViewConstants.INITIAL_Y - (row * ViewConstants.Y_INCREMENT);
 
-        WireController result = Instantiate(wirePrefab);
+        T result = Instantiate(prefab);
 
         result.setOwner(playerNumber);
         result.transform.position = new Vector3(computeXPos(column, playerNumber), yPos, 0);
         result.transform.Rotate(computeRotation(playerNumber));
         return result;
+    }
+
+    private WireController constructWire(int column, int row, PlayerNumber playerNumber) {
+        return constructGameObject(column, row, playerNumber, wirePrefab);
     }
 
     private InitiatorController constructInitiator(int column, int row, PlayerNumber playerNumber) {
-        float yPos = ViewConstants.INITIAL_Y - (row * ViewConstants.Y_INCREMENT);
-
-        InitiatorController result = Instantiate(initiatorPrefab);
-
-        result.setOwner(playerNumber);
-        result.transform.position = new Vector3(computeXPos(column, playerNumber), yPos, 0);
-        result.transform.Rotate(computeRotation(playerNumber));
-        return result;
+        return constructGameObject(column, row, playerNumber, initiatorPrefab);
     }
 
     private SwapperController constructSwapper(int column, int row, PlayerNumber playerNumber) {
-        float yPos = ViewConstants.INITIAL_Y - (row * ViewConstants.Y_INCREMENT);
-
-        SwapperController result = Instantiate(swapperPrefab);
-
-        result.setOwner(playerNumber);
-        result.transform.position = new Vector3(computeXPos(column, playerNumber), yPos, 0);
-        result.transform.Rotate(computeRotation(playerNumber));
-        return result;
+        return constructGameObject(column, row, playerNumber, swapperPrefab);
     }
 
     private TerminatorController constructTerminator(int column, int row, PlayerNumber playerNumber) {
-        float yPos = ViewConstants.INITIAL_Y - (row * ViewConstants.Y_INCREMENT);
-
-        TerminatorController result = Instantiate(terminatorPrefab);
-
-        result.setOwner(playerNumber);
-        result.transform.position = new Vector3(computeXPos(column, playerNumber), yPos, 0);
-        result.transform.Rotate(computeRotation(playerNumber));
-        return result;
+        return constructGameObject(column, row, playerNumber, terminatorPrefab);
     }
 
     private ConnectorController constructConnector(Connector modelInput, int column, int row, PlayerNumber playerNumber) {
-        float yPos = ViewConstants.INITIAL_Y - (row * ViewConstants.Y_INCREMENT);
-
-        ConnectorController result;
         if (modelInput.getOutputs().Count == 1) {
-            result = Instantiate(this.connectorOneOutputPrefab);
+            return constructGameObject(column, row, playerNumber, this.connectorOneOutputPrefab);
         }
         else if (modelInput.getOutputs().Count == 2) {
-            result = Instantiate(this.connectorTwoOutputPrefab);
+            return constructGameObject(column, row, playerNumber, this.connectorTwoOutputPrefab);
         }
         else {
             throw new Exception("Invalid number of outputs for Connector");
         }
-
-        result.setOwner(playerNumber);
-        result.transform.position = new Vector3(computeXPos(column, playerNumber), yPos, 0);
-        result.transform.Rotate(computeRotation(playerNumber));
-        return result;
     }
 
     private void constructInputViews(BoardObject[,] boardModel, AbstractBoardObjectController[,] boardViews, PlayerNumber playerNumber) {

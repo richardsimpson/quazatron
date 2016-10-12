@@ -8,15 +8,15 @@ public class EnemyController : ZapController
 
     private float nextActionTime = 0.0f;
 
-    private const float INITIAL_X = 5.46f;
+    private float initialX = 5.46f;
 
     private AbstractBoardObjectController[,] boardViews;
     private List<int> validInputs = new List<int>();
     private int currentInputRow = -1;
     private System.Random random = new System.Random();
 
-    protected override float getInitialX() {
-        return INITIAL_X;
+    protected override float getX() {
+        return initialX;
     }
 
     public override void reset()

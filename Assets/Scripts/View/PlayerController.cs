@@ -10,10 +10,10 @@ public class PlayerController : ZapController
     // after a FixedUpdate has happened since they released the fire button.
     private bool fireKeyDown  = true;
 
-    private const float INITIAL_X = -5.46f;
+    private const float initialX = -5.46f;
 
-    protected override float getInitialX() {
-        return INITIAL_X;
+    protected override float getX() {
+        return initialX;
     }
 
     public override void reset()

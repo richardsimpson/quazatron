@@ -222,7 +222,7 @@ public class View : MonoBehaviour
         return player;
     }
 
-    public List<ZapController> createPlayerLives(List<ZapController> playerLives, ZapController prefab, float livesXPos, 
+    private List<ZapController> createPlayerLives(List<ZapController> playerLives, ZapController prefab, float livesXPos, 
         int numberOfLives)
     {
         float posY = LIVES_INITIAL_Y;

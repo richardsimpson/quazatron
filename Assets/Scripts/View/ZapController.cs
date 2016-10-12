@@ -25,13 +25,13 @@ public class ZapController : MonoBehaviour
 
     protected int playerPosition = 0;
 
-    protected virtual float getInitialX() {
+    protected virtual float getX() {
         throw new Exception("getInitialX must be overridden");
     }
 
     public virtual void reset()
     {
-        transform.position = new Vector3(getInitialX(), ViewConstants.INITIAL_Y, INITIAL_Z);
+        transform.position = new Vector3(getX(), ViewConstants.INITIAL_Y, INITIAL_Z);
     }
 
     // Use this for initialization
@@ -54,7 +54,7 @@ public class ZapController : MonoBehaviour
     public void onPlayerMoved(int position)
     {
         this.playerPosition = position;
-        transform.position = new Vector3(getInitialX(), ViewConstants.INITIAL_Y - (ViewConstants.Y_INCREMENT*position));
+        transform.position = new Vector3(getX(), ViewConstants.INITIAL_Y - (ViewConstants.Y_INCREMENT*position));
     }
 
     public int getPlayerPosition() {

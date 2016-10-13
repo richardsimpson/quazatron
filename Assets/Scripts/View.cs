@@ -57,13 +57,26 @@ public class View : MonoBehaviour
         oldPlayers.Add(PlayerNumber.PLAYER1, new Dictionary<int, ZapController>());
         oldPlayers.Add(PlayerNumber.PLAYER2, new Dictionary<int, ZapController>());
 
-        timeLeftText.gameOver += onGameOver;
+        timeLeftText.gamePhaseChange += onGamePhaseChange;
     }
 
-    private void onGameOver(TimeLeftController sender, EventArgs e)
+    private void onGamePhaseChange(TimeLeftController sender, GamePhaseChangeEventArgs e)
     {
-        PlayerNumber winner = this.targetSummary.getWinner();
-        this.winLoseController.activate(winner);
+        this.player1.onGamePhaseChange(e.gamePhase);
+        this.player2.onGamePhaseChange(e.gamePhase);
+
+        for (int i = 0 ; i < this.player1Lives.Count ; i++) {
+            this.player1Lives[i].onGamePhaseChange(e.gamePhase);
+        }
+
+        for (int i = 0 ; i < this.player2Lives.Count ; i++) {
+            this.player2Lives[i].onGamePhaseChange(e.gamePhase);
+        }
+
+        if (e.gamePhase == GamePhase.GAME_OVER) {
+            PlayerNumber winner = this.targetSummary.getWinner();
+            this.winLoseController.activate(winner);
+        }
     }
 
     private void constructTargetSummary() {

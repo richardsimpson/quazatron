@@ -24,6 +24,7 @@ public class ZapController : MonoBehaviour
     private const float INITIAL_Z = -1.0f;
 
     protected int playerPosition = 0;
+    protected GamePhase gamePhase = GamePhase.CHOOSE_COLOUR;
 
     protected virtual float getX() {
         throw new Exception("getInitialX must be overridden");
@@ -63,6 +64,11 @@ public class ZapController : MonoBehaviour
 
     public void setActive(bool active) {
         this.gameObject.SetActive(active);
+    }
+
+    public void onGamePhaseChange(GamePhase gamePhase)
+    {
+        this.gamePhase = gamePhase;
     }
 }
 

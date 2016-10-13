@@ -23,26 +23,34 @@ public class PlayerController : ZapController
     }
 
     void FixedUpdate() {
-        // called before performing any physics calculations
-        if (!fireKeyDown && Input.GetKey(KeyCode.Space)) {
-            // issue a 'fire' event
-            fireKeyDown = true;
-            OnFirePressed(new FirePressedEventArgs(PlayerNumber.PLAYER1));
+        if (this.gamePhase == GamePhase.CHOOSE_COLOUR) {
+            return;
         }
 
-        if (!Input.GetKey(KeyCode.Space)) {
-            fireKeyDown = false;
-        }
-
-        if (Time.time > nextActionTime) {
-            nextActionTime = Time.time + period;
-
-            if (Input.GetKey(KeyCode.UpArrow)) {
-                OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(PlayerNumber.PLAYER1, Direction.UP));
+        if (this.gamePhase == GamePhase.MAIN_GAME) {
+            // called before performing any physics calculations
+            if (!fireKeyDown && Input.GetKey(KeyCode.Space)) {
+                // issue a 'fire' event
+                fireKeyDown = true;
+                OnFirePressed(new FirePressedEventArgs(PlayerNumber.PLAYER1));
             }
-            else if (Input.GetKey(KeyCode.DownArrow)) {
-                OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(PlayerNumber.PLAYER1, Direction.DOWN));
+
+            if (!Input.GetKey(KeyCode.Space)) {
+                fireKeyDown = false;
             }
+
+            if (Time.time > nextActionTime) {
+                nextActionTime = Time.time + period;
+
+                if (Input.GetKey(KeyCode.UpArrow)) {
+                    OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(PlayerNumber.PLAYER1, Direction.UP));
+                }
+                else if (Input.GetKey(KeyCode.DownArrow)) {
+                    OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(PlayerNumber.PLAYER1, Direction.DOWN));
+                }
+            }
+
+            return;
         }
     }
 

@@ -57,31 +57,38 @@ public class EnemyController : ZapController
     }
 
     void FixedUpdate() {
-        if (Time.time > nextActionTime) {
-            nextActionTime = Time.time + period;
+        if (this.gamePhase == GamePhase.CHOOSE_COLOUR) {
+            return;
+        }
 
-            // if not already decided on a move, select one
-            if (this.currentInputRow == -1) {
-                this.currentInputRow = identifyInputRow();
-            }
+        if (this.gamePhase == GamePhase.MAIN_GAME) {
+            if (Time.time > nextActionTime) {
+                nextActionTime = Time.time + period;
 
-            // if still don't know one, there must be no valid input right now.  wait for a while
-            if (this.currentInputRow == -1) {
-                // wait 2 seconds, for some zaps to expire
-                nextActionTime = nextActionTime + 2;
-            }
-            else {
-                if (this.playerPosition > this.currentInputRow) {
-                    OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(PlayerNumber.PLAYER2, Direction.UP));
+                // if not already decided on a move, select one
+                if (this.currentInputRow == -1) {
+                    this.currentInputRow = identifyInputRow();
                 }
-                else if (this.playerPosition < this.currentInputRow) {
-                    OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(PlayerNumber.PLAYER2, Direction.DOWN));
+
+                // if still don't know one, there must be no valid input right now.  wait for a while
+                if (this.currentInputRow == -1) {
+                    // wait 2 seconds, for some zaps to expire
+                    nextActionTime = nextActionTime + 2;
                 }
                 else {
-                    this.currentInputRow = -1;
-                    OnFirePressed(new FirePressedEventArgs(PlayerNumber.PLAYER2));
+                    if (this.playerPosition > this.currentInputRow) {
+                        OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(PlayerNumber.PLAYER2, Direction.UP));
+                    }
+                    else if (this.playerPosition < this.currentInputRow) {
+                        OnPlayerMoveRequested(new PlayerMoveRequestedEventArgs(PlayerNumber.PLAYER2, Direction.DOWN));
+                    }
+                    else {
+                        this.currentInputRow = -1;
+                        OnFirePressed(new FirePressedEventArgs(PlayerNumber.PLAYER2));
+                    }
                 }
             }
+            return;
         }
     }
 

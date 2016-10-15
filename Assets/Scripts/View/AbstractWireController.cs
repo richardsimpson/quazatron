@@ -11,7 +11,6 @@ public class AbstractWireController : AbstractBoardObjectController {
     public Material blackWire;
 
     private List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
-    private PlayerNumber activePlayerNumber;
     private float currentOffset = 0.0f;
 
     private float period = 0.0125f;
@@ -44,28 +43,20 @@ public class AbstractWireController : AbstractBoardObjectController {
         }
     }
 
-    public override void onActivated(PlayerNumber playerNumber)
+    public override void onActivated(PlayerNumber playerNumber, Side player1side)
     {
-        // playerNumber indicates the colour (PLAYER1 = YELLOW, PLAYER2 = BLUE)
-        // the inherited 'owner' indicates the side of the board (PLAYER1 = left, PLAYER2 = right)
-        //
-        // with this information, we can determine which material to use, to display the 'flow' on the wire.
+        base.onActivated(playerNumber, player1side);
 
-        base.onActivated(playerNumber);
-
-        this.activePlayerNumber = playerNumber;
-
-        if (this.owner != PlayerNumber.PLAYER1 && this.owner != PlayerNumber.PLAYER2) {
-            throw new Exception("Unexpected player number " + this.owner + " for owner");
+        if (playerNumber != PlayerNumber.PLAYER1 && playerNumber != PlayerNumber.PLAYER2) {
+            throw new Exception("Unexpected player number " + playerNumber + " for activePlayerNumber");
         }
 
-        if (this.activePlayerNumber != PlayerNumber.PLAYER1 && this.activePlayerNumber != PlayerNumber.PLAYER2) {
-            throw new Exception("Unexpected player number " + this.activePlayerNumber + " for activePlayerNumber");
-        }
-
+        // The colour of the wire is not dependant on the player and the side of the zap / component.
+        // It's the side that player1 is using.  that way, if player 1 is using the right side, and the enemy (on the left) fires into
+        // a wire, the player number will be 2, and the side is RIGHT (yellow wire).
         Material activeMaterial;
-        if (this.owner == PlayerNumber.PLAYER1) {
-            if (this.activePlayerNumber == PlayerNumber.PLAYER1) {
+        if (Side.LEFT == player1side) {
+            if (playerNumber == PlayerNumber.PLAYER1) {
                 activeMaterial = yellowLeftWire;
             }
             else {
@@ -73,16 +64,16 @@ public class AbstractWireController : AbstractBoardObjectController {
             }
         }
         else {
-            if (this.activePlayerNumber == PlayerNumber.PLAYER1) {
-                activeMaterial = yellowRightWire;
+            if (playerNumber == PlayerNumber.PLAYER1) {
+                activeMaterial = blueRightWire;
             }
             else {
-                activeMaterial = blueRightWire;
+                activeMaterial = yellowRightWire;
             }
         }
 
         for (int i = 0 ; i < this.meshRenderers.Count ; i++) {
-            this.meshRenderers[i].material = activeMaterial; //getColourForPlayerNumber(playerNumber);
+            this.meshRenderers[i].material = activeMaterial;
         }
     }
 

@@ -22,10 +22,10 @@ public class InitiatorController : AbstractWireController {
         }
 
         if (owner == PlayerNumber.PLAYER1) {
-            initiatorRenderer.color = YELLOW;
+            initiatorRenderer.color = ViewConstants.YELLOW;
         }
         else {
-            initiatorRenderer.color = BLUE;
+            initiatorRenderer.color = ViewConstants.BLUE;
         }
     }
 

@@ -92,5 +92,19 @@ public class EnemyController : ZapController
         }
     }
 
+    public override void onSideChanged(Side side) {
+        initialX = -initialX;
+        transform.position = new Vector3(-transform.position.x, transform.position.y, transform.position.z);
+        transform.Rotate(new Vector3(0, 0, 180));
+
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        if (Side.LEFT == side) {
+            spriteRenderer.color = ViewConstants.YELLOW;
+        }
+        else {
+            spriteRenderer.color = ViewConstants.BLUE;
+        }
+    }
+
 }
 

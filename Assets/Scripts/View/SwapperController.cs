@@ -22,10 +22,10 @@ public class SwapperController : AbstractWireController {
         }
 
         if (owner == PlayerNumber.PLAYER1) {
-            swapperRenderer.color = BLUE;
+            swapperRenderer.color = ViewConstants.BLUE;
         }
         else {
-            swapperRenderer.color = YELLOW;
+            swapperRenderer.color = ViewConstants.YELLOW;
         }
     }
 
@@ -37,9 +37,9 @@ public class SwapperController : AbstractWireController {
         return PlayerNumber.PLAYER1;
     }
 
-    public override void onActivated(PlayerNumber playerNumber)
+    public override void onActivated(PlayerNumber playerNumber, Side player1side)
     {
-        base.onActivated(getOppositePlayerForPlayerNumber(playerNumber));
+        base.onActivated(getOppositePlayerForPlayerNumber(playerNumber), player1side);
     }
 
 }

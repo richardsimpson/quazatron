@@ -23,10 +23,10 @@ public class ConnectorController : AbstractWireController {
         }
 
         if (owner == PlayerNumber.PLAYER1) {
-            connectorRenderer.color = YELLOW;
+            connectorRenderer.color = ViewConstants.YELLOW;
         }
         else {
-            connectorRenderer.color = BLUE;
+            connectorRenderer.color = ViewConstants.BLUE;
         }
     }
 

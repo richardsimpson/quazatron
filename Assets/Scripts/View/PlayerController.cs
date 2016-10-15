@@ -10,7 +10,7 @@ public class PlayerController : ZapController
     // after a FixedUpdate has happened since they released the fire button.
     private bool fireKeyDown  = true;
 
-    private const float initialX = -5.46f;
+    private float initialX = -5.46f;
 
     protected override float getX() {
         return initialX;
@@ -22,13 +22,23 @@ public class PlayerController : ZapController
         nextActionTime = Time.time;
     }
 
+    // called before performing any physics calculations
     void FixedUpdate() {
         if (this.gamePhase == GamePhase.CHOOSE_COLOUR) {
+            if (Time.time > nextActionTime) {
+                nextActionTime = Time.time + period;
+
+                if (Input.GetKey(KeyCode.LeftArrow)) {
+                    OnSideChangeRequested(new SideChangeRequestedEventArgs(Side.LEFT));
+                }
+                else if (Input.GetKey(KeyCode.RightArrow)) {
+                    OnSideChangeRequested(new SideChangeRequestedEventArgs(Side.RIGHT));
+                }
+            }
             return;
         }
 
         if (this.gamePhase == GamePhase.MAIN_GAME) {
-            // called before performing any physics calculations
             if (!fireKeyDown && Input.GetKey(KeyCode.Space)) {
                 // issue a 'fire' event
                 fireKeyDown = true;
@@ -51,6 +61,20 @@ public class PlayerController : ZapController
             }
 
             return;
+        }
+    }
+
+    public override void onSideChanged(Side side) {
+        initialX = -initialX;
+        transform.position = new Vector3(-transform.position.x, transform.position.y, transform.position.z);
+        transform.Rotate(new Vector3(0, 0, 180));
+
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        if (Side.LEFT == side) {
+            spriteRenderer.color = ViewConstants.YELLOW;
+        }
+        else {
+            spriteRenderer.color = ViewConstants.BLUE;
         }
     }
 

@@ -56,12 +56,12 @@ public class Model : MonoBehaviour
         return this.gameBoard.getTargets();
     }
 
-    public BoardObject[,] getPlayer1Board() {
-        return this.gameBoard.getPlayer1Board();
+    public BoardObject[,] getLeftBoard() {
+        return this.gameBoard.getLeftBoard();
     }
 
-    public BoardObject[,] getPlayer2Board() {
-        return this.gameBoard.getPlayer2Board();
+    public BoardObject[,] getRightBoard() {
+        return this.gameBoard.getRightBoard();
     }
 
     public GameBoard getGameBoard() {
@@ -96,14 +96,6 @@ public class Model : MonoBehaviour
         return this.player2;
     }
 
-    private BoardObject[,] getBoardForPlayerNumber(PlayerNumber playerNumber) {
-        if (PlayerNumber.PLAYER1 == playerNumber) {
-            return getPlayer1Board();
-        }
-
-        return getPlayer2Board();
-    }
-
     public void onFirePressed(PlayerNumber playerNumber)
     {
         Player player = getPlayerForPlayerNumber(playerNumber);
@@ -117,7 +109,7 @@ public class Model : MonoBehaviour
         }
 
         // don't allow a zap to be fired if there is a terminator in the first column of the current row.
-        BoardObject[,] board = getBoardForPlayerNumber(playerNumber);
+        BoardObject[,] board = this.gameBoard.getBoardForPlayerNumber(playerNumber);
         if (board[0, playerPosition] is Terminator) {
             return;
         }
@@ -161,5 +153,10 @@ public class Model : MonoBehaviour
 
     public int getNumberOfLives() {
         return NUMBER_OF_LIVES;
+    }
+
+    public void onSideChangedRequested(Side side)
+    {
+        this.gameBoard.onSideChangedRequested(side);
     }
 }

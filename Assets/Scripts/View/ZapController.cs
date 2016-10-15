@@ -1,6 +1,24 @@
 ﻿using System;
 using UnityEngine;
 
+public delegate void SideChangedRequestedEventHandler(object sender, SideChangeRequestedEventArgs e);
+
+public enum Side {
+    LEFT,
+    RIGHT
+}
+
+public class SideChangeRequestedEventArgs : EventArgs
+{
+    public Side side;
+
+    public SideChangeRequestedEventArgs(Side side)
+    {
+        this.side = side;
+    }
+
+}
+
 public delegate void PlayerMoveRequestedEventHandler(object sender, PlayerMoveRequestedEventArgs e);
 public delegate void FirePressedEventHandler(object sender, FirePressedEventArgs e);
 
@@ -25,6 +43,8 @@ public class ZapController : MonoBehaviour
 
     protected int playerPosition = 0;
     protected GamePhase gamePhase = GamePhase.CHOOSE_COLOUR;
+
+    public event SideChangedRequestedEventHandler sideChangeRequested;
 
     protected virtual float getX() {
         throw new Exception("getInitialX must be overridden");
@@ -69,6 +89,16 @@ public class ZapController : MonoBehaviour
     public void onGamePhaseChange(GamePhase gamePhase)
     {
         this.gamePhase = gamePhase;
+    }
+
+    protected void OnSideChangeRequested(SideChangeRequestedEventArgs eventArgs) {
+        Debug.Log("OnSideChangeRequested: " + eventArgs.side);
+        if (sideChangeRequested != null)
+            sideChangeRequested(this, eventArgs);
+    }
+
+    public virtual void onSideChanged(Side side) {
+        throw new Exception("onSideChanged must be overridden");
     }
 }
 

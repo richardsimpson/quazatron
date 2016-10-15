@@ -22,10 +22,10 @@ public class TerminatorController : AbstractWireController {
         }
 
         if (owner == PlayerNumber.PLAYER1) {
-            terminatorRenderer.color = YELLOW;
+            terminatorRenderer.color = ViewConstants.YELLOW;
         }
         else {
-            terminatorRenderer.color = BLUE;
+            terminatorRenderer.color = ViewConstants.BLUE;
         }
     }
 

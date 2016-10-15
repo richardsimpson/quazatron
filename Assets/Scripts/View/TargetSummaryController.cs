@@ -3,10 +3,6 @@ using System.Collections;
 
 public class TargetSummaryController : MonoBehaviour {
 
-    private Color YELLOW = new Color(1F, 1F, 0F);
-    private Color BLUE = new Color(0F, 0F, 1F);
-    private Color BLACK = new Color(0F, 0F, 0F);
-
     private SpriteRenderer spriteRenderer;
     private PlayerNumber currentWinner;
 
@@ -25,19 +21,13 @@ public class TargetSummaryController : MonoBehaviour {
         return this.currentWinner;
     }
 
-    public void onUpdated(PlayerNumber playerNumber)
+    public void onUpdated(PlayerNumber playerNumber, Side player1side)
     {
         this.currentWinner = playerNumber;
 
-        if (PlayerNumber.PLAYER1 == playerNumber) {
-            spriteRenderer.color = YELLOW;
-        }
-        else if (PlayerNumber.PLAYER2 == playerNumber) {
-            spriteRenderer.color = BLUE;
-        }
-        else {
-            spriteRenderer.color = BLACK;
-        }
+        Color colour = ViewConstants.getColourForPlayerNumberAndSide(playerNumber, player1side);
+
+        spriteRenderer.color = colour;
     }
 
 }

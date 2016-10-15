@@ -21,6 +21,8 @@ using UnityEngine;
 // NOTE: This will ultimately indicate which player is winning, via an enum (just like wires), but for now the event is empty.
 public delegate void TargetSummaryUpdatedEventHandler(GameBoard sender, TargetSummaryUpdatedEventArgs e);
 
+public delegate void SideChangedEventHandler(GameBoard sender, SideChangedEventArgs e);
+
 public class TargetSummaryUpdatedEventArgs : EventArgs
 {
     public PlayerNumber playerNumber;
@@ -31,16 +33,30 @@ public class TargetSummaryUpdatedEventArgs : EventArgs
     }    
 }
 
+public class SideChangedEventArgs : EventArgs
+{
+    public Side side;
+
+    public SideChangedEventArgs(Side side)
+    {
+        this.side = side;
+    }
+
+}
+
 public class GameBoard
 {
     public event TargetSummaryUpdatedEventHandler targetSummaryUpdated;
+    public event SideChangedEventHandler sideChanged;
 
     private const int ROW_COUNT = 12;
     private const int MAX_TERMINATOR_COUNT = 6;
 
     private List<Target> targets = new List<Target>();
-    private AbstractBoardObject[,] player1Board = new AbstractBoardObject[3,ROW_COUNT];
-    private AbstractBoardObject[,] player2Board = new AbstractBoardObject[3,ROW_COUNT];
+    private AbstractBoardObject[,] leftBoard = new AbstractBoardObject[3,ROW_COUNT];
+    private AbstractBoardObject[,] rightBoard = new AbstractBoardObject[3,ROW_COUNT];
+
+    private Side player1Side = Side.LEFT;
 
 	public GameBoard()
 	{
@@ -50,8 +66,8 @@ public class GameBoard
             this.targets.Add(target);
         }
 
-        createBoard(this.player1Board);
-        createBoard(this.player2Board);
+        createBoard(this.leftBoard);
+        createBoard(this.rightBoard);
 	}
 
     private void createExampleBoard(AbstractBoardObject[,] board) {
@@ -321,20 +337,34 @@ public class GameBoard
         return this.targets;
     }
 
-    public BoardObject[,] getPlayer1Board() {
-        return this.player1Board;
+    public BoardObject[,] getLeftBoard() {
+        return this.leftBoard;
     }
 
-    public BoardObject[,] getPlayer2Board() {
-        return this.player2Board;
+    public BoardObject[,] getRightBoard() {
+        return this.rightBoard;
     }
 
-    private BoardObject[,] getBoardForPlayerNumber(PlayerNumber playerNumber) {
+    private BoardObject[,] getPlayer1Board() {
+        if (this.player1Side == Side.LEFT) {
+            return this.leftBoard;
+        }
+        return this.rightBoard;
+    }
+
+    private BoardObject[,] getPlayer2Board() {
+        if (this.player1Side == Side.LEFT) {
+            return this.rightBoard;
+        }
+        return this.leftBoard;
+    }
+
+    public BoardObject[,] getBoardForPlayerNumber(PlayerNumber playerNumber) {
         if (PlayerNumber.PLAYER1 == playerNumber) {
-            return this.player1Board;
+            return getPlayer1Board();
         }
 
-        return player2Board;
+        return getPlayer2Board();
     }
 
     public void onFirePressed(PlayerNumber playerNumber, int playerPosition)
@@ -383,6 +413,21 @@ public class GameBoard
 
     private void onTargetActivatedStateChanged(BoardObject sender, BoardObjectActivatedEventArgs e) {
         recalculateTargetSummaryState();
+    }
+
+    public void onSideChangedRequested(Side side)
+    {
+        if (this.player1Side != side) {
+            this.player1Side = side;
+
+            onSideChanged(new SideChangedEventArgs(side));
+        }
+    }
+
+    private void onSideChanged(SideChangedEventArgs eventArgs) {
+        Debug.Log("onSideChanged: " + eventArgs.side);
+        if (sideChanged != null)
+            sideChanged(this, eventArgs);
     }
 
 }

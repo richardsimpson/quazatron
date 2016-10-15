@@ -25,14 +25,14 @@ public class TargetController : AbstractBoardObjectController {
                 nextActionTime = Time.time + period;
 
                 // Alternate between yellow, blue and black.
-                if (targetRenderer.color == YELLOW) {
-                    targetRenderer.color = BLUE;
+                if (targetRenderer.color == ViewConstants.YELLOW) {
+                    targetRenderer.color = ViewConstants.BLUE;
                 }
-                else if (targetRenderer.color == BLUE) {
-                    targetRenderer.color = BLACK;
+                else if (targetRenderer.color == ViewConstants.BLUE) {
+                    targetRenderer.color = ViewConstants.BLACK;
                 }
-                else if (targetRenderer.color == BLACK) {
-                    targetRenderer.color = YELLOW;
+                else if (targetRenderer.color == ViewConstants.BLACK) {
+                    targetRenderer.color = ViewConstants.YELLOW;
                 }
             }
 
@@ -40,11 +40,11 @@ public class TargetController : AbstractBoardObjectController {
 	
 	}
 
-    public override void onActivated(PlayerNumber playerNumber)
+    public override void onActivated(PlayerNumber playerNumber, Side player1side)
     {
         if ((PlayerNumber.PLAYER1 == playerNumber) || (PlayerNumber.PLAYER2 == playerNumber)) {
             this.controlDisputed = false;
-            targetRenderer.color = getColourForPlayerNumber(playerNumber);
+            targetRenderer.color = ViewConstants.getColourForPlayerNumberAndSide(playerNumber, player1side);
         }
         else if (PlayerNumber.BOTH == playerNumber) {
             this.controlDisputed = true;

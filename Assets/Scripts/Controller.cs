@@ -26,10 +26,10 @@ public class Controller : MonoBehaviour
         this.view = view;
 
         // add listeners to all model events.
-        BoardObject[,] player1Board = this.model.getPlayer1Board();
-        addBoardObjectActivatedEventListeners(player1Board);
-        BoardObject[,] player2Board = this.model.getPlayer2Board();
-        addBoardObjectActivatedEventListeners(player2Board);
+        BoardObject[,] leftBoard = this.model.getLeftBoard();
+        addBoardObjectActivatedEventListeners(leftBoard);
+        BoardObject[,] rightBoard = this.model.getRightBoard();
+        addBoardObjectActivatedEventListeners(rightBoard);
 
         List<Target> targets = this.model.getTargets();
         for (int i = 0 ; i < targets.Count ; i++) {
@@ -40,22 +40,24 @@ public class Controller : MonoBehaviour
         this.model.zapFired += onZapFired;
         this.model.zapExpired += onZapExpired;
         this.model.getGameBoard().targetSummaryUpdated += onTargetSummaryUpdated;
+        this.model.getGameBoard().sideChanged += onSideChanged;
 
         // create the view - one component for each element in the model.
-        this.view.init(player1Board, player2Board);
+        this.view.init(leftBoard, rightBoard);
 
         // Create the map/dictionary of model -> view elements, so can instruct changes in the view.
-        AbstractBoardObjectController[,] player1BoardViews = this.view.getPlayer1Board();
-        AbstractBoardObjectController[,] player2BoardViews = this.view.getPlayer2Board();
+        AbstractBoardObjectController[,] leftBoardViews = this.view.getLeftBoard();
+        AbstractBoardObjectController[,] rightBoardViews = this.view.getRightBoard();
         List<TargetController> targetViews = this.view.getTargets();
-        addToDictionary(player1Board, player1BoardViews);
-        addToDictionary(player2Board, player2BoardViews);
+        addToDictionary(leftBoard, leftBoardViews);
+        addToDictionary(rightBoard, rightBoardViews);
         addToDictionary(targets, targetViews);
 
         // setup the players (views)
         ZapController player1 = this.view.createPlayer1();
         player1.playerMoveRequested += onPlayerMoveRequested;
         player1.firePressed += onFirePressed;
+        player1.sideChangeRequested += onSideChangedRequested;
 
         ZapController player2 = this.view.createPlayer2();
         player2.playerMoveRequested += onPlayerMoveRequested;
@@ -66,6 +68,7 @@ public class Controller : MonoBehaviour
         for (int i = 0 ; i < player1Lives.Count ; i++) {
             player1Lives[i].playerMoveRequested += onPlayerMoveRequested;
             player1Lives[i].firePressed += onFirePressed;
+            player1.sideChangeRequested += onSideChangedRequested;
         }
 
         List<ZapController> player2Lives = this.view.createPlayer2Lives(this.model.getNumberOfLives());
@@ -79,12 +82,39 @@ public class Controller : MonoBehaviour
         this.model.getPlayer2().playerMoved += onPlayerMoved;
 
         // setup the targets to an initial state where they alternate between player1 and player2
+        setTargetsInitialState(Side.LEFT);
+
+        this.view.gameStart += onGameStart;
+    }
+
+    private void onGameStart(View sender, GameStartEventArgs e)
+    {
+        setTargetsInitialState(e.player1Side);
+    }
+
+    private void setTargetsInitialState(Side player1Side) {
+        // setup the targets to an initial state where they alternate between yellow and blue
+        PlayerNumber playerA;
+        PlayerNumber playerB;
+
+        // use player1Side to set the corrent owners (colours)
+        if (Side.LEFT == player1Side) {
+            playerA = PlayerNumber.PLAYER1;
+            playerB = PlayerNumber.PLAYER2;
+        }
+        else {
+            playerA = PlayerNumber.PLAYER2;
+            playerB = PlayerNumber.PLAYER1;
+        }
+
+        List<Target> targets = this.model.getTargets();
+
         for (int i = 0; i < targets.Count ; i++) {
             if (i % 2 == 0) {
-                targets[i].setControllingPlayer(PlayerNumber.PLAYER1);
+                targets[i].setControllingPlayer(playerA);
             }
             else {
-                targets[i].setControllingPlayer(PlayerNumber.PLAYER2);
+                targets[i].setControllingPlayer(playerB);
             }
         }
     }
@@ -115,7 +145,7 @@ public class Controller : MonoBehaviour
         this.view.onZapExpired(e.playerNumber, e.playerPosition);
     }
 
-    void onTargetSummaryUpdated(GameBoard sender, TargetSummaryUpdatedEventArgs e)
+    private void onTargetSummaryUpdated(GameBoard sender, TargetSummaryUpdatedEventArgs e)
     {
         this.view.onTargetSummaryUpdated(e.playerNumber);
     }
@@ -141,6 +171,14 @@ public class Controller : MonoBehaviour
 
     private void onBoardObjectDeactivated(BoardObject sender, EventArgs e) {
         this.view.onBoardObjectDeactivated(this.modelToViewBoardObjects[sender]);
+    }
+
+    private void onSideChangedRequested(object sender, SideChangeRequestedEventArgs e) {
+        this.model.onSideChangedRequested(e.side);
+    }
+
+    private void onSideChanged(GameBoard sender, SideChangedEventArgs e) {
+        this.view.onSideChanged(e.side);
     }
 
 }

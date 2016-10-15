@@ -3,7 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// extends MonoBehaviour so that we can wire it into the Application object in Unity
+public delegate void GameStartEventHandler(View sender, GameStartEventArgs e);
+
+public class GameStartEventArgs : EventArgs {
+
+    public Side player1Side;
+
+    public GameStartEventArgs(Side player1Side) {
+        this.player1Side = player1Side;
+    }
+}
+
 public class View : MonoBehaviour
 {
     private const float PLAYER_1_LIVES_X = -8f;
@@ -25,10 +35,12 @@ public class View : MonoBehaviour
     public TimeLeftController timeLeftText;
     public WinLoseController winLoseController;
 
+    public event GameStartEventHandler gameStart;
+
     private List<TargetController> targets = new List<TargetController>();
     private TargetSummaryController targetSummary;
-    private AbstractBoardObjectController[,] player1BoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
-    private AbstractBoardObjectController[,] player2BoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
+    private AbstractBoardObjectController[,] leftBoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
+    private AbstractBoardObjectController[,] rightBoardViews = new AbstractBoardObjectController[3, ROW_COUNT];
 
     private ZapController player1;
     private ZapController player2;
@@ -40,7 +52,10 @@ public class View : MonoBehaviour
     private float player2ColZeroXPos;
     private float colWidth;
 
-    public void init(BoardObject[,] player1BoardModel, BoardObject[,] player2BoardModel) {
+    private Side player1Side = Side.LEFT;
+    private Side player2Side = Side.RIGHT;
+
+    public void init(BoardObject[,] leftBoardModel, BoardObject[,] rightBoardModel) {
         this.player1ColZeroXPos = targetPrefab.transform.position.x - (targetPrefab.transform.localScale.x/2)
             - (wirePrefab.transform.localScale.x/2) - (wirePrefab.transform.localScale.x * 2);
 
@@ -51,8 +66,8 @@ public class View : MonoBehaviour
 
         constructTargetViews();
         constructTargetSummary();
-        constructInputViews(player1BoardModel, player1BoardViews, PlayerNumber.PLAYER1);
-        constructInputViews(player2BoardModel, player2BoardViews, PlayerNumber.PLAYER2);
+        constructInputViews(leftBoardModel, leftBoardViews, PlayerNumber.PLAYER1);
+        constructInputViews(rightBoardModel, rightBoardViews, PlayerNumber.PLAYER2);
 
         oldPlayers.Add(PlayerNumber.PLAYER1, new Dictionary<int, ZapController>());
         oldPlayers.Add(PlayerNumber.PLAYER2, new Dictionary<int, ZapController>());
@@ -60,8 +75,33 @@ public class View : MonoBehaviour
         timeLeftText.gamePhaseChange += onGamePhaseChange;
     }
 
+    private void onGameStart(GameStartEventArgs eventArgs) {
+        Debug.Log("onGameStart: " + eventArgs);
+
+        if (gameStart != null)
+            gameStart(this, eventArgs);
+    }
+
     private void onGamePhaseChange(TimeLeftController sender, GamePhaseChangeEventArgs e)
     {
+        if (e.gamePhase == GamePhase.MAIN_GAME) {
+            onGameStart(new GameStartEventArgs(this.player1Side));
+
+            AbstractBoardObjectController[,] enemyBoardViews;
+            if (this.player1Side == Side.LEFT) {
+                enemyBoardViews = this.rightBoardViews;
+            }
+            else {
+                enemyBoardViews = this.leftBoardViews;
+            }
+
+            // set the board on the enemy players
+            ((EnemyController)this.player2).setBoard(enemyBoardViews); 
+            for (int i = 0 ; i < this.player2Lives.Count ; i++) {
+                ((EnemyController)this.player2Lives[i]).setBoard(enemyBoardViews);
+            }
+        }
+
         this.player1.onGamePhaseChange(e.gamePhase);
         this.player2.onGamePhaseChange(e.gamePhase);
 
@@ -211,16 +251,17 @@ public class View : MonoBehaviour
         return this.targets;
     }
 
-    public AbstractBoardObjectController[,] getPlayer1Board()
+    public AbstractBoardObjectController[,] getLeftBoard()
     {
-        return this.player1BoardViews;
+        return this.leftBoardViews;
     }
 
-    public AbstractBoardObjectController[,] getPlayer2Board()
+    public AbstractBoardObjectController[,] getRightBoard()
     {
-        return this.player2BoardViews;
+        return this.rightBoardViews;
     }
 
+    // TODO: Refactor these - create the players in 'init', and turn these into getter methods
     public ZapController createPlayer1()
     {
         this.player1 = Instantiate<PlayerController>(playerPrefab);
@@ -229,10 +270,8 @@ public class View : MonoBehaviour
 
     public ZapController createPlayer2()
     {
-        EnemyController player = Instantiate<EnemyController>(enemyPrefab);
-        player.setBoard(this.player2BoardViews); 
-        this.player2 = player;
-        return player;
+        this.player2 = Instantiate<EnemyController>(enemyPrefab);
+        return this.player2;
     }
 
     private List<ZapController> createPlayerLives(List<ZapController> playerLives, ZapController prefab, float livesXPos, 
@@ -256,13 +295,7 @@ public class View : MonoBehaviour
     }
 
     public List<ZapController> createPlayer2Lives(int numberOfLives) {
-        List<ZapController> players = createPlayerLives(this.player2Lives, enemyPrefab, PLAYER_2_LIVES_X, numberOfLives);
-
-        for (int i = 0 ; i < players.Count ; i++) {
-            ((EnemyController)players[i]).setBoard(this.player2BoardViews);
-        }
-
-        return players;
+        return createPlayerLives(this.player2Lives, enemyPrefab, PLAYER_2_LIVES_X, numberOfLives);
     }
 
     private ZapController getPlayerForPlayerNumber(PlayerNumber playerNumber) {
@@ -279,7 +312,7 @@ public class View : MonoBehaviour
     }
 
     public void onBoardObjectActivated(AbstractBoardObjectController boardObjectController, PlayerNumber playerNumber) {
-        boardObjectController.onActivated(playerNumber);
+        boardObjectController.onActivated(playerNumber, this.player1Side);
     }
 
     public void onBoardObjectDeactivated(AbstractBoardObjectController boardObjectController) {
@@ -347,7 +380,25 @@ public class View : MonoBehaviour
 
     public void onTargetSummaryUpdated(PlayerNumber playerNumber)
     {
-        this.targetSummary.onUpdated(playerNumber);
+        this.targetSummary.onUpdated(playerNumber, this.player1Side);
     }
 
+    public void onSideChanged(Side side)
+    {
+        this.player2Side = this.player1Side;
+        this.player1Side = side;
+
+        this.player1.onSideChanged(this.player1Side);
+        this.player2.onSideChanged(this.player2Side);
+
+        for (int i = 0 ; i < this.player1Lives.Count ; i++) {
+            this.player1Lives[i].onSideChanged(this.player1Side);
+        }
+
+        for (int i = 0 ; i < this.player2Lives.Count ; i++) {
+            this.player2Lives[i].onSideChanged(this.player2Side);
+        }
+
+
+    }
 }

@@ -47,7 +47,7 @@ public class ZapController : MonoBehaviour
     public event SideChangedRequestedEventHandler sideChangeRequested;
 
     protected virtual float getX() {
-        throw new Exception("getInitialX must be overridden");
+        throw new Exception("getX must be overridden");
     }
 
     public virtual void reset()

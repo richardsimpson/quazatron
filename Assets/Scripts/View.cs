@@ -18,7 +18,7 @@ public class View : MonoBehaviour
 {
     private const float PLAYER_1_LIVES_X = -8f;
     private const float PLAYER_2_LIVES_X = 8f;
-    private const float LIVES_INITIAL_Y = 4f;
+    private const float LIVES_INITIAL_Y = ViewConstants.INITIAL_Y;
 
     private const int ROW_COUNT = 12;
 
@@ -34,6 +34,8 @@ public class View : MonoBehaviour
     public EnemyController enemyPrefab;
     public TimeLeftController timeLeftText;
     public WinLoseController winLoseController;
+    public PlayerAvatarController playerAvatarPrefab;
+    public EnemyAvatarController enemyAvatarPrefab;
 
     public event GameStartEventHandler gameStart;
 
@@ -44,6 +46,8 @@ public class View : MonoBehaviour
 
     private ZapController player1;
     private ZapController player2;
+    private AbstractAvatarController player1Avatar;
+    private AbstractAvatarController player2Avatar;
     private List<ZapController> player1Lives = new List<ZapController>();
     private List<ZapController> player2Lives = new List<ZapController>();
     private Dictionary<PlayerNumber, Dictionary<int, ZapController>> oldPlayers = new Dictionary<PlayerNumber, Dictionary<int, ZapController>>();
@@ -71,6 +75,9 @@ public class View : MonoBehaviour
 
         oldPlayers.Add(PlayerNumber.PLAYER1, new Dictionary<int, ZapController>());
         oldPlayers.Add(PlayerNumber.PLAYER2, new Dictionary<int, ZapController>());
+
+        createPlayer1();
+        createPlayer2();
 
         timeLeftText.gamePhaseChange += onGamePhaseChange;
     }
@@ -261,16 +268,33 @@ public class View : MonoBehaviour
         return this.rightBoardViews;
     }
 
-    // TODO: Refactor these - create the players in 'init', and turn these into getter methods
-    public ZapController createPlayer1()
-    {
+    private void createPlayer1() {
+        // NOTE: Must be called AFTER the target summary position is determined
+
         this.player1 = Instantiate<PlayerController>(playerPrefab);
+        this.player1Avatar = Instantiate<PlayerAvatarController>(playerAvatarPrefab);
+
+        float yPos = this.targetSummary.transform.position.y;
+        yPos = yPos + this.targetSummary.transform.localScale.y/2 + this.player1Avatar.transform.localScale.y/2;
+        this.player1Avatar.setYPos(yPos);
+    }
+
+    private void createPlayer2() {
+        // NOTE: Must be called AFTER the target summary position is determined
+
+        this.player2 = Instantiate<EnemyController>(enemyPrefab);
+        this.player2Avatar = Instantiate<EnemyAvatarController>(enemyAvatarPrefab);
+
+        float yPos = this.targetSummary.transform.position.y;
+        yPos = yPos + this.targetSummary.transform.localScale.y/2 + this.player2Avatar.transform.localScale.y/2;
+        this.player2Avatar.setYPos(yPos);
+    }
+
+    public ZapController getPlayer1() {
         return this.player1;
     }
 
-    public ZapController createPlayer2()
-    {
-        this.player2 = Instantiate<EnemyController>(enemyPrefab);
+    public ZapController getPlayer2() {
         return this.player2;
     }
 
@@ -387,6 +411,7 @@ public class View : MonoBehaviour
             this.player2Lives[i].onSideChanged(this.player2Side);
         }
 
-
+        this.player1Avatar.onSideChanged();
+        this.player2Avatar.onSideChanged();
     }
 }

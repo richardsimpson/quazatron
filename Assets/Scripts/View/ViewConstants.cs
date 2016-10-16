@@ -4,7 +4,7 @@ using UnityEngine;
 public class ViewConstants
 {
 
-    public const float INITIAL_Y = 3f;
+    public const float INITIAL_Y = 2f;
     public const float Y_INCREMENT = 0.475f;
 
     private static Color yellow = new Color(1F, 1F, 0F);

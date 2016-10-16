@@ -88,6 +88,11 @@ public class TimeLeftController : MonoBehaviour {
                 this.textComponent.text = this.prefix + count;
 
                 nextActionTime = Time.time + period;
+
+                // If player pressed 'space', terminate the choose colour mode
+                if ((this.phase == GamePhase.CHOOSE_COLOUR) && (Input.GetKey(KeyCode.Space))) {
+                    count = 0;
+                }
             }
         }
 	}

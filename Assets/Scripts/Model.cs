@@ -32,7 +32,8 @@ public class ZapFiredEventArgs : EventArgs
 // extends MonoBehaviour so that we can wire it into the Application object in Unity
 public class Model : MonoBehaviour
 {
-    private const int NUMBER_OF_LIVES = 8;
+    private const int PLAYER1_NUMBER_OF_LIVES = 5;
+    private const int PLAYER2_NUMBER_OF_LIVES = 8;
     private const float ZAP_LIFETIME = 8.5f;
 
     public event ZapFiredEventHandler zapFired;
@@ -151,8 +152,12 @@ public class Model : MonoBehaviour
         player.onPlayerMoveRequested(direction);
     }
 
-    public int getNumberOfLives() {
-        return NUMBER_OF_LIVES;
+    public int getPlayer1NumberOfLives() {
+        return PLAYER1_NUMBER_OF_LIVES;
+    }
+
+    public int getPlayer2NumberOfLives() {
+        return PLAYER2_NUMBER_OF_LIVES;
     }
 
     public void onSideChangedRequested(Side side)

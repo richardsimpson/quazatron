@@ -63,17 +63,15 @@ public class Controller : MonoBehaviour
         player2.playerMoveRequested += onPlayerMoveRequested;
         player2.firePressed += onFirePressed;
 
-        // TODO: Pass in the number of lives to the view and have the view construct the lives, and then have getters
-
         // setup the players lives (view)
-        List<ZapController> player1Lives = this.view.createPlayer1Lives(this.model.getNumberOfLives());
+        List<ZapController> player1Lives = this.view.createPlayer1Lives(this.model.getPlayer1NumberOfLives());
         for (int i = 0 ; i < player1Lives.Count ; i++) {
             player1Lives[i].playerMoveRequested += onPlayerMoveRequested;
             player1Lives[i].firePressed += onFirePressed;
             player1.sideChangeRequested += onSideChangedRequested;
         }
 
-        List<ZapController> player2Lives = this.view.createPlayer2Lives(this.model.getNumberOfLives());
+        List<ZapController> player2Lives = this.view.createPlayer2Lives(this.model.getPlayer2NumberOfLives());
         for (int i = 0 ; i < player2Lives.Count ; i++) {
             player2Lives[i].playerMoveRequested += onPlayerMoveRequested;
             player2Lives[i].firePressed += onFirePressed;

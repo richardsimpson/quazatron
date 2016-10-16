@@ -210,6 +210,12 @@ public class View : MonoBehaviour
                 }
             }
         }
+
+//        // add in an addition column of wires next to the initial inputs
+//        int column = -1;
+//        for (int i = 0 ; i < boardModel.GetLength(1) ; i++) {
+//            constructWire(column, i, playerNumber); 
+//        }
     }
 
     private void constructBoardObjectView(AbstractBoardObjectController[,] boardViews, BoardObject modelInput, int column, int row, 

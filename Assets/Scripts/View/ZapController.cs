@@ -100,5 +100,9 @@ public class ZapController : MonoBehaviour
     public virtual void onSideChanged(Side side) {
         throw new Exception("onSideChanged must be overridden");
     }
+
+    public virtual void moveOnZapFired() {
+        throw new Exception("moveOnZapFired must be overridden");
+    }
 }
 

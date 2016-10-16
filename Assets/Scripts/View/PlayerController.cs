@@ -10,7 +10,8 @@ public class PlayerController : ZapController
     // after a FixedUpdate has happened since they released the fire button.
     private bool fireKeyDown  = true;
 
-    private float initialX = -5.46f;
+    private float initialX = -5.22f;
+    private float moveByOnActivate = 0.38f;
 
     protected override float getX() {
         return initialX;
@@ -65,7 +66,9 @@ public class PlayerController : ZapController
     }
 
     public override void onSideChanged(Side side) {
-        initialX = -initialX;
+        this.initialX = -this.initialX;
+        this.moveByOnActivate = -this.moveByOnActivate;
+
         transform.position = new Vector3(-transform.position.x, transform.position.y, transform.position.z);
         transform.Rotate(new Vector3(0, 0, 180));
 
@@ -78,5 +81,8 @@ public class PlayerController : ZapController
         }
     }
 
+    public override void moveOnZapFired() {
+        transform.position += new Vector3(moveByOnActivate, 0, 0);
+    }
 }
 

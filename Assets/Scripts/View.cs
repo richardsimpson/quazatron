@@ -327,39 +327,13 @@ public class View : MonoBehaviour
         return this.player2Lives;
     }
 
-    private Vector3 getMovementForPlayerNumber(PlayerNumber playerNumber) {
-        ZapController player = getPlayerForPlayerNumber(playerNumber);
-        Transform t = player.transform;
-
-        float x;
-        if (PlayerNumber.PLAYER1 == playerNumber) {
-            if (Side.LEFT == this.player1Side) {
-                x = t.localScale.x;
-            }
-            else {
-                x = -t.localScale.x;
-            }
-        }
-        else {
-            if (Side.LEFT == this.player1Side) {
-                x = -t.localScale.x;
-            }
-            else {
-                x = t.localScale.x;
-            }
-        }
-
-        return new Vector3(x, 0, 0);
-    }
-
     public void onZapFired(PlayerNumber playerNumber)
     {
         ZapController player = getPlayerForPlayerNumber(playerNumber);
         List<ZapController> playerLives = getPlayerLivesForPlayerNumber(playerNumber);
 
         // move the player one space to the right, (or to the left, for player2)
-        Transform t = player.transform;
-        t.position += getMovementForPlayerNumber(playerNumber);
+        player.moveOnZapFired();
 
         // disable it's script.
         player.enabled = false;

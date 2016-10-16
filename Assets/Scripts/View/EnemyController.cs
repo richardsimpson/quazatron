@@ -8,7 +8,8 @@ public class EnemyController : ZapController
 
     private float nextActionTime = 0.0f;
 
-    private float initialX = 5.46f;
+    private float initialX = 5.22f;
+    private float moveByOnActivate = -0.38f;
 
     private AbstractBoardObjectController[,] boardViews;
     private List<int> validInputs = new List<int>();
@@ -93,7 +94,9 @@ public class EnemyController : ZapController
     }
 
     public override void onSideChanged(Side side) {
-        initialX = -initialX;
+        this.initialX = -this.initialX;
+        this.moveByOnActivate = -this.moveByOnActivate;
+
         transform.position = new Vector3(-transform.position.x, transform.position.y, transform.position.z);
         transform.Rotate(new Vector3(0, 0, 180));
 
@@ -106,5 +109,8 @@ public class EnemyController : ZapController
         }
     }
 
+    public override void moveOnZapFired() {
+        transform.position += new Vector3(moveByOnActivate, 0, 0);
+    }
 }
 

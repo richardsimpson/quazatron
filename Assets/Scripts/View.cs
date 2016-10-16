@@ -229,11 +229,11 @@ public class View : MonoBehaviour
         float yPos = ViewConstants.INITIAL_Y - (totalTargetHeight  / 2f) + ViewConstants.Y_INCREMENT*3;
 
         player1Wall.transform.position = new Vector3(computeXPos(-1, PlayerNumber.PLAYER1)-this.colWidth/2, yPos, 0);
-        player1Wall.transform.localScale = new Vector3(0.5f, totalTargetHeight, 0);
+        player1Wall.transform.localScale = new Vector3(player1Wall.transform.localScale.x, totalTargetHeight, 0);
         player1Wall.setOwner(PlayerNumber.PLAYER1);
 
         player2Wall.transform.position = new Vector3(computeXPos(-1, PlayerNumber.PLAYER2)+this.colWidth/2-player2Wall.transform.localScale.x/2, yPos, 0);
-        player2Wall.transform.localScale = new Vector3(0.5f, totalTargetHeight, 0);
+        player2Wall.transform.localScale = new Vector3(player2Wall.transform.localScale.x, totalTargetHeight, 0);
         player2Wall.setOwner(PlayerNumber.PLAYER2);
     }
 

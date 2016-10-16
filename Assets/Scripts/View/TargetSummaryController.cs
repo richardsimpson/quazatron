@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System;
+using UnityEngine;
 
 public class TargetSummaryController : MonoBehaviour {
 
@@ -9,7 +9,17 @@ public class TargetSummaryController : MonoBehaviour {
     // Use this for initialization.  Using Awake instead of Start, because the controller will cause a call
     // to onActivated before Start() is called.
     void Awake () {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        SpriteRenderer[] comps = GetComponentsInChildren<SpriteRenderer>();
+
+        for (int i = 0 ; i < comps.Length ; i++) {
+            if (comps[i].sprite.name == "Target") {
+                spriteRenderer = comps[i];
+            }
+        }
+
+        if (spriteRenderer == null) {
+            throw new Exception("Cannot locate correct SpriteRenderer component");
+        }
     }
 
     // Update is called once per frame

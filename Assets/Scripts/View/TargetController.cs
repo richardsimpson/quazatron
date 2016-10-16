@@ -15,7 +15,19 @@ public class TargetController : AbstractBoardObjectController {
 	// Use this for initialization.  Using Awake instead of Start, because the controller will cause a call
     // to onActivated before Start() is called.
 	void Awake () {
-        targetRenderer = GetComponent<SpriteRenderer>();
+
+        SpriteRenderer[] comps = GetComponentsInChildren<SpriteRenderer>();
+
+        for (int i = 0 ; i < comps.Length ; i++) {
+            if (comps[i].sprite.name == "Target") {
+                targetRenderer = comps[i];
+            }
+        }
+
+        if (targetRenderer == null) {
+            throw new Exception("Cannot locate correct SpriteRenderer component");
+        }
+
         nextActionTime = Time.time;
 	}
 	

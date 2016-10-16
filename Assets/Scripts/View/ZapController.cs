@@ -52,7 +52,7 @@ public class ZapController : MonoBehaviour
 
     public virtual void reset()
     {
-        transform.position = new Vector3(getX(), ViewConstants.INITIAL_Y, INITIAL_Z);
+        transform.position = new Vector3(getX(), ViewConstants.INITIAL_Y+ViewConstants.Y_INCREMENT, INITIAL_Z);
     }
 
     // Use this for initialization

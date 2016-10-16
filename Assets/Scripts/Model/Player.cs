@@ -11,7 +11,7 @@ public class Player
     private const int MAX_PLAYER_POS = 11;
 
     private readonly PlayerNumber playerNumber;
-    private int playerPosition = 0;
+    private int playerPosition = -1;
 
     public Player(PlayerNumber playerNumber) {
         this.playerNumber = playerNumber;
@@ -19,7 +19,7 @@ public class Player
 
     public void reset()
     {
-        this.playerPosition = 0;
+        this.playerPosition = -1;
     }
 
     public void onPlayerMoveRequested(Direction direction)
@@ -29,7 +29,8 @@ public class Player
         if (direction == Direction.DOWN) {
             this.playerPosition = this.playerPosition + 1;
         }
-        else if (direction == Direction.UP) {
+        // don't allow the user to go up if they in the start position (-1)
+        else if ((direction == Direction.UP) && (this.playerPosition > -1)) {
             this.playerPosition = this.playerPosition - 1;
         }
 

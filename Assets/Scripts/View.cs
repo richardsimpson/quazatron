@@ -214,9 +214,9 @@ public class View : MonoBehaviour
             }
         }
 
-        // add in an addition column of wires next to the initial inputs
+        // add in an addition column of wires next to the initial inputs, including an additional wire above the first one
         int column = -1;
-        for (int i = 0 ; i < boardModel.GetLength(1) ; i++) {
+        for (int i = -1 ; i < boardModel.GetLength(1) ; i++) {
             constructWire(column, i, playerNumber); 
         }
     }
@@ -225,8 +225,8 @@ public class View : MonoBehaviour
         PlayerWallController player1Wall = Instantiate(this.playerWallPrefab);
         PlayerWallController player2Wall = Instantiate(this.playerWallPrefab);
 
-        float totalTargetHeight = (this.targets.Count+3) * ViewConstants.Y_INCREMENT;
-        float yPos = ViewConstants.INITIAL_Y - (totalTargetHeight  / 2f) + ViewConstants.Y_INCREMENT*2;
+        float totalTargetHeight = (this.targets.Count+4) * ViewConstants.Y_INCREMENT;
+        float yPos = ViewConstants.INITIAL_Y - (totalTargetHeight  / 2f) + ViewConstants.Y_INCREMENT*3;
 
         player1Wall.transform.position = new Vector3(computeXPos(-1, PlayerNumber.PLAYER1)-this.colWidth/2, yPos, 0);
         player1Wall.transform.localScale = new Vector3(0.5f, totalTargetHeight, 0);

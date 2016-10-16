@@ -331,11 +331,25 @@ public class View : MonoBehaviour
         ZapController player = getPlayerForPlayerNumber(playerNumber);
         Transform t = player.transform;
 
+        float x;
         if (PlayerNumber.PLAYER1 == playerNumber) {
-            return new Vector3(t.localScale.x, 0, 0);
+            if (Side.LEFT == this.player1Side) {
+                x = t.localScale.x;
+            }
+            else {
+                x = -t.localScale.x;
+            }
+        }
+        else {
+            if (Side.LEFT == this.player1Side) {
+                x = -t.localScale.x;
+            }
+            else {
+                x = t.localScale.x;
+            }
         }
 
-        return new Vector3(-t.localScale.x, 0, 0);
+        return new Vector3(x, 0, 0);
     }
 
     public void onZapFired(PlayerNumber playerNumber)

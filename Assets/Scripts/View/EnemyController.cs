@@ -8,7 +8,7 @@ public class EnemyController : ZapController
 
     private float nextActionTime = 0.0f;
 
-    private float initialX = 5.22f;
+    private float initialX = 5.26f;
     private float moveByOnActivate = -0.38f;
 
     private AbstractBoardObjectController[,] boardViews;

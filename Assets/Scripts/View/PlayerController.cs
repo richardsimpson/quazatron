@@ -10,7 +10,7 @@ public class PlayerController : ZapController
     // after a FixedUpdate has happened since they released the fire button.
     private bool fireKeyDown  = true;
 
-    private float initialX = -5.22f;
+    private float initialX = -5.26f;
     private float moveByOnActivate = 0.38f;
 
     protected override float getX() {

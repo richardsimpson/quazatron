@@ -253,9 +253,9 @@ MonoBehaviour:
     type: 2}
   timeLeftText: {fileID: 1897955506}
   winLoseController: {fileID: 1788600247}
-  playerAvatarPrefab: {fileID: 114000010607436288, guid: 90d4deaa9858d49bc88bc6932af620df,
+  playerAvatarPrefab: {fileID: 114000013347883294, guid: 6598fa417ddc642f59ca2d18de85d304,
     type: 2}
-  enemyAvatarPrefab: {fileID: 114000011333231668, guid: 34fbfda7194194c6fa9c09f9c89f8fe1,
+  enemyAvatarPrefab: {fileID: 114000010535384426, guid: fbc8dee42d99348a4a74aac6c39242fd,
     type: 2}
 --- !u!4 &547416117
 Transform:

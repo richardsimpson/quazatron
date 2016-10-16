@@ -36,6 +36,7 @@ public class View : MonoBehaviour
     public WinLoseController winLoseController;
     public PlayerAvatarController playerAvatarPrefab;
     public EnemyAvatarController enemyAvatarPrefab;
+    public PlayerWallController playerWallPrefab;
 
     public event GameStartEventHandler gameStart;
 
@@ -72,6 +73,8 @@ public class View : MonoBehaviour
         constructTargetSummary();
         constructInputViews(leftBoardModel, leftBoardViews, PlayerNumber.PLAYER1);
         constructInputViews(rightBoardModel, rightBoardViews, PlayerNumber.PLAYER2);
+
+        constructPlayerWalls();
 
         oldPlayers.Add(PlayerNumber.PLAYER1, new Dictionary<int, ZapController>());
         oldPlayers.Add(PlayerNumber.PLAYER2, new Dictionary<int, ZapController>());
@@ -211,11 +214,27 @@ public class View : MonoBehaviour
             }
         }
 
-//        // add in an addition column of wires next to the initial inputs
-//        int column = -1;
-//        for (int i = 0 ; i < boardModel.GetLength(1) ; i++) {
-//            constructWire(column, i, playerNumber); 
-//        }
+        // add in an addition column of wires next to the initial inputs
+        int column = -1;
+        for (int i = 0 ; i < boardModel.GetLength(1) ; i++) {
+            constructWire(column, i, playerNumber); 
+        }
+    }
+
+    private void constructPlayerWalls() {
+        PlayerWallController player1Wall = Instantiate(this.playerWallPrefab);
+        PlayerWallController player2Wall = Instantiate(this.playerWallPrefab);
+
+        float totalTargetHeight = (this.targets.Count+3) * ViewConstants.Y_INCREMENT;
+        float yPos = ViewConstants.INITIAL_Y - (totalTargetHeight  / 2f) + ViewConstants.Y_INCREMENT*2;
+
+        player1Wall.transform.position = new Vector3(computeXPos(-1, PlayerNumber.PLAYER1)-this.colWidth/2, yPos, 0);
+        player1Wall.transform.localScale = new Vector3(0.5f, totalTargetHeight, 0);
+        player1Wall.setOwner(PlayerNumber.PLAYER1);
+
+        player2Wall.transform.position = new Vector3(computeXPos(-1, PlayerNumber.PLAYER2)+this.colWidth/2-player2Wall.transform.localScale.x/2, yPos, 0);
+        player2Wall.transform.localScale = new Vector3(0.5f, totalTargetHeight, 0);
+        player2Wall.setOwner(PlayerNumber.PLAYER2);
     }
 
     private void constructBoardObjectView(AbstractBoardObjectController[,] boardViews, BoardObject modelInput, int column, int row, 
